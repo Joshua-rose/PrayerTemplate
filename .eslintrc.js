@@ -37,6 +37,7 @@ module.exports = {
         }],
         "react/no-array-index-key": 0,
         "import/prefer-default-export": 1,
+        "linebreak-style":0,
         "react/prop-types": [1, {
             ignore: [
                 'children',
