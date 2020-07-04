@@ -2,9 +2,11 @@
 /* eslint-disable max-len */
 import React, { useState, useEffect } from 'react';
 import Section from './components/section';
+import Modal from './components/modal';
 import PrayerGuild, { plan } from './guides/prayerguide1';
 import logo from './logo.svg';
 import './App.css';
+import Button from './components/button';
 
 type sections = plan & {
   isFocused?: boolean,
@@ -23,6 +25,24 @@ function App() {
   const guideStarter: sections[] = [];
   const [currentGuide, setCurrentGuide] = useState(guideStarter);
   const [section, setSection] = useState(0);
+  const [showModal, setShowModal] = useState(false);
+  const endOfTimer = () => {
+    setShowModal(true);
+    // create modal content with buttons for going to next or clearing modal
+  };
+  const goToNext = () => {
+    setSection((s) => {
+      const i = s + 1;
+      const guide = currentGuide;
+      guide[s].isFocused = false;
+      if (guide.length > i) {
+        guide[i].isFocused = true;
+      }
+      setShowModal(false);
+      setCurrentGuide(guide);
+      return s;
+    });
+  };
   const createInterval = (sectionTime: string) => {
     interval = setInterval(() => {
       setTime((t) => {
@@ -34,16 +54,7 @@ function App() {
             sec = 59; --min;
           } else {
             clearInterval(interval);
-            setSection((s) => {
-              const i = s + 1;
-              const guide = currentGuide;
-              guide[s].isFocused = false;
-              if (guide.length > i) {
-                guide[i].isFocused = true;
-              }
-              setCurrentGuide(guide);
-              return s;
-            });
+            setShowModal(true);
           }
         }
         return min >= 0 || sec >= 0 ? `${ensureTwoDigit(min)}:${ensureTwoDigit(sec)}` : '';
@@ -66,9 +77,6 @@ function App() {
     if (currentGuide.length > 0) {
       clearInterval(interval);
       const currentIndex = currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
-      console.log(': -----------------------------------------------------------------------');
-      console.log('App -> currentGuide[currentIndex].time', currentGuide[currentIndex].time);
-      console.log(': -----------------------------------------------------------------------');
       createInterval(currentGuide[currentIndex].time);
     }
   }, [currentGuide]);
@@ -78,16 +86,29 @@ function App() {
       {currentGuide.map(({
         title, display, time: length, isFocused, isComplete,
       }) => (
-        <Section
-          title={title}
-          content={display}
-          isFocused={isFocused}
-          togglePlaying={() => {}}
-          proceedToNextSection={() => {}}
-          time={isFocused ? time : length}
-        />
+        <>
+          <Section
+            title={title}
+            content={display}
+            isFocused={isFocused}
+            togglePlaying={() => { clearInterval(interval); }}
+            proceedToNextSection={goToNext}
+            time={isFocused ? time : length}
+          />
+          
+        </>
 
       ))}
+      {showModal && (
+        <Modal>
+          <p>{`${currentGuide[section]?.title} complete.`}</p>
+          <p>Select Next to continue to next section or clear to remove this notice.</p>
+          <div className="buttons">
+          <Button onClick={() => setShowModal(false)}>Clear</Button>
+          <Button onClick={goToNext} buttonType="primary">Next</Button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }
