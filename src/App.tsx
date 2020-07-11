@@ -3,10 +3,9 @@
 import React, { useState, useEffect } from 'react';
 import Section from './components/section';
 import Modal from './components/modal';
-import PrayerGuild, { plan } from './guides/prayerguide1';
-import logo from './logo.svg';
-import './App.css';
 import Button from './components/button';
+import PrayerGuild, { plan } from './guides/prayerguide1';
+import './App.css';
 
 type sections = plan & {
   isFocused?: boolean,
@@ -21,13 +20,16 @@ function ensureTwoDigit(val: number|string) {
 }
 function App() {
   let interval: number;
+  
   const [time, setTime] = useState('');
   const guideStarter: sections[] = [];
   const [currentGuide, setCurrentGuide] = useState(guideStarter);
   const [section, setSection] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const getCurrentIndex = () => currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
   const endOfTimer = () => {
     setShowModal(true);
+    setTime('');
     // create modal content with buttons for going to next or clearing modal
   };
   const goToNext = () => {
@@ -35,15 +37,23 @@ function App() {
       const i = s + 1;
       const guide = currentGuide;
       guide[s].isFocused = false;
+      guide[s].isComplete = true;
       if (guide.length > i) {
         guide[i].isFocused = true;
+        console.log(': ------------------------------');
+        console.log('goToNext -> guide[i]', guide[i]?.title);
+        console.log(': ------------------------------');
       }
       setShowModal(false);
       setCurrentGuide(guide);
+      
       return s;
     });
   };
-  const createInterval = (sectionTime: string) => {
+  const startTimer = (sectionTime: string) => {
+    console.log(': --------------------------------------');
+    console.log('startTimer -> sectionTime', sectionTime);
+    console.log(': --------------------------------------');
     interval = setInterval(() => {
       setTime((t) => {
         const tt = t !== '' ? t : sectionTime;
@@ -54,13 +64,20 @@ function App() {
             sec = 59; --min;
           } else {
             clearInterval(interval);
-            setShowModal(true);
+            endOfTimer();
           }
         }
         return min >= 0 || sec >= 0 ? `${ensureTwoDigit(min)}:${ensureTwoDigit(sec)}` : '';
       });
     }, 100);
   };
+  const togglePlaying = () => {
+    if (interval) {
+      clearInterval(interval);
+    } else {
+      startTimer(currentGuide[getCurrentIndex()].time);
+    }
+  }
   useEffect(() => {
     const getContents = async () => {
       const contents = await Promise.all(PrayerGuild.map((pg) => pg.content()));
@@ -76,8 +93,11 @@ function App() {
   useEffect(() => {
     if (currentGuide.length > 0) {
       clearInterval(interval);
-      const currentIndex = currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
-      createInterval(currentGuide[currentIndex].time);
+      // const currentIndex = currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
+      startTimer(currentGuide[getCurrentIndex()].time);
+      console.log(': ---------------------------------------------------------------------------------');
+      console.log('App -> currentGuide[getCurrentIndex()].time', currentGuide[getCurrentIndex()].time);
+      console.log(': ---------------------------------------------------------------------------------');
     }
   }, [currentGuide]);
 
@@ -95,7 +115,7 @@ function App() {
             proceedToNextSection={goToNext}
             time={isFocused ? time : length}
           />
-          
+
         </>
 
       ))}
@@ -104,8 +124,8 @@ function App() {
           <p>{`${currentGuide[section]?.title} complete.`}</p>
           <p>Select Next to continue to next section or clear to remove this notice.</p>
           <div className="buttons">
-          <Button onClick={() => setShowModal(false)}>Clear</Button>
-          <Button onClick={goToNext} buttonType="primary">Next</Button>
+            <Button onClick={() => setShowModal(false)}>Clear</Button>
+            <Button onClick={goToNext} buttonType="primary">Next</Button>
           </div>
         </Modal>
       )}
