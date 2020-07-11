@@ -18,6 +18,7 @@ const StyledSection = Styled.section`
     header {
         background-image: linear-gradient(113.42deg, #A3C4BC 25.18%, rgba(163, 196, 188, 0.21) 78.54%);
         height: 20vh;
+        
     }
     article {
         background-image: url(${background});
@@ -51,6 +52,11 @@ const StyledSection = Styled.section`
         
         }
     }
+    .complete{
+      header {
+        background-image: linear-gradient(113.42deg, #c0ff33 25.18%, rgba(163, 196, 188, 0.21) 78.54%);
+      }
+    }
 `;
 
 const StyledTimer = Styled(Button)`
@@ -71,7 +77,7 @@ const StyledTimer = Styled(Button)`
 const Section = ({
   title, time, content, isTimerRunning, isFocused, togglePlaying, isComplete, proceedToNextSection,
 }: Props) => (
-  <StyledSection className={isFocused ? 'open' : ''}>
+  <StyledSection className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`}>
     <header>
       <StyledTimer buttonType={`timer ${isTimerRunning ? 'playing' : 'paused'}`} onClick={togglePlaying}>
         {time}
