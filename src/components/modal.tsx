@@ -27,7 +27,7 @@ display: flex;
     .buttons {
         display:flex;
         flex-direction:row;
-        justify-contents: space-evenly;
+        justify-content: space-evenly;
     }
 `;
 
