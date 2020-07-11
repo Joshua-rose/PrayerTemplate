@@ -1,5 +1,5 @@
-import React from 'react'
-import Styled from 'styled-components'
+import React from 'react';
+import Styled from 'styled-components';
 
 interface Props {
     onClick: (e?: any) => void;
@@ -16,14 +16,10 @@ const StyledButton = Styled.button`
     }
 `;
 
+const Button : React.FunctionComponent<Props> = ({ onClick, buttonType, children }) => (
+  <StyledButton type={buttonType && /submit/i.test(buttonType) ? 'submit' : 'button'} className={buttonType} onClick={onClick}>
+    {children}
+  </StyledButton>
+);
 
-const Button : React.FunctionComponent<Props> = ({onClick, buttonType, children}) => {
-    
-     return (
-         <StyledButton type={buttonType && /submit/i.test(buttonType) ? 'submit' : 'button'} className={buttonType} onClick={onClick}>
-            {children}
-         </StyledButton>
-    )
-}
-
-export default Button
+export default Button;
