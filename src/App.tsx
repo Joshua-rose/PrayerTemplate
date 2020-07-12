@@ -98,7 +98,7 @@ function App() {
   // }, [currentGuide]);
 
   return (
-    <div>
+    <div id="App">
       {currentGuide.map(({
         title, display, time: length, isFocused, isComplete,
       }) => (
