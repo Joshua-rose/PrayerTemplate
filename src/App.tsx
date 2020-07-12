@@ -109,7 +109,7 @@ function App() {
             isFocused={isFocused}
             togglePlaying={toggleTimer}
             proceedToNextSection={goToNext}
-            time={isFocused ? time : length}
+            time={isFocused ? time || length : length}
           />
 
         </>
