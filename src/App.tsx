@@ -31,6 +31,7 @@ function App() {
   };
 
   const goToNext = () => {
+    setTime('');
     setSection((s) => {
       const i = s + 1;
       const guide = currentGuide;
@@ -45,12 +46,15 @@ function App() {
   };
   const getCurrentIndex = () => currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
   const clearLocalInterval = () => {
+    console.log(': ------------------------------------------------------------');
+    console.log('clearLocalInterval -> clearLocalInterval called');
+    console.log(': ------------------------------------------------------------');
     clearInterval(intervalID);
     setIntervalID(0);
   };
   const createInterval = (sectionTime: string) => {
     clearLocalInterval();
-    setIntervalID(setInterval(() => {
+    const localInterval = setInterval(() => {
       setTime((t) => {
         const tt = t !== '' ? t : sectionTime;
         let [min, sec] = tt.split(':').map((n) => parseInt(n, 10));
@@ -59,13 +63,16 @@ function App() {
           if (min > 0) {
             sec = 59; --min;
           } else {
-            clearLocalInterval();
+            clearInterval(localInterval);
+            setIntervalID(0);
+            // setTime('');
             setShowModal(true);
           }
         }
         return min >= 0 || sec >= 0 ? `${ensureTwoDigit(min)}:${ensureTwoDigit(sec)}` : '';
       });
-    }, 100));
+    }, 100);
+    setIntervalID(localInterval);
   };
   const toggleTimer = () => {
     // if timer is stopped start timer
