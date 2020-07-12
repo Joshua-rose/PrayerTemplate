@@ -19,16 +19,17 @@ function ensureTwoDigit(val: number|string) {
   return valAsString;
 }
 function App() {
-  let interval: number;
   const [time, setTime] = useState('');
   const guideStarter: sections[] = [];
   const [currentGuide, setCurrentGuide] = useState(guideStarter);
   const [section, setSection] = useState(0);
   const [showModal, setShowModal] = useState(false);
+  const [intervalID, setIntervalID] = useState(0);
   const endOfTimer = () => {
     setShowModal(true);
     // create modal content with buttons for going to next or clearing modal
   };
+
   const goToNext = () => {
     setSection((s) => {
       const i = s + 1;
@@ -42,8 +43,14 @@ function App() {
       return s;
     });
   };
+  const getCurrentIndex = () => currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
+  const clearLocalInterval = () => {
+    clearInterval(intervalID);
+    setIntervalID(0);
+  };
   const createInterval = (sectionTime: string) => {
-    interval = setInterval(() => {
+    clearLocalInterval();
+    setIntervalID(setInterval(() => {
       setTime((t) => {
         const tt = t !== '' ? t : sectionTime;
         let [min, sec] = tt.split(':').map((n) => parseInt(n, 10));
@@ -52,13 +59,23 @@ function App() {
           if (min > 0) {
             sec = 59; --min;
           } else {
-            clearInterval(interval);
+            clearLocalInterval();
             setShowModal(true);
           }
         }
         return min >= 0 || sec >= 0 ? `${ensureTwoDigit(min)}:${ensureTwoDigit(sec)}` : '';
       });
-    }, 100);
+    }, 100));
+  };
+  const toggleTimer = () => {
+    // if timer is stopped start timer
+    console.log(': ---------------------------------');
+    console.log('toggleTimer -> interval', intervalID);
+    console.log(': ---------------------------------');
+    if (intervalID !== 0) {
+      clearLocalInterval();
+    } else createInterval(time || currentGuide[getCurrentIndex()].time);
+    // if timer is going stop timer
   };
   useEffect(() => {
     const getContents = async () => {
@@ -69,16 +86,16 @@ function App() {
     };
     getContents();
     return () => {
-      clearInterval(interval);
+      clearInterval(intervalID);
     };
   }, []);
-  useEffect(() => {
-    if (currentGuide.length > 0) {
-      clearInterval(interval);
-      const currentIndex = currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
-      createInterval(currentGuide[currentIndex].time);
-    }
-  }, [currentGuide]);
+  // useEffect(() => {
+  //   if (currentGuide.length > 0) {
+  //     clearInterval(interval);
+  //     const currentIndex = currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
+  //     createInterval(currentGuide[currentIndex].time);
+  //   }
+  // }, [currentGuide]);
 
   return (
     <div>
@@ -90,11 +107,11 @@ function App() {
             title={title}
             content={display}
             isFocused={isFocused}
-            togglePlaying={() => { clearInterval(interval); }}
+            togglePlaying={toggleTimer}
             proceedToNextSection={goToNext}
             time={isFocused ? time : length}
           />
-          
+
         </>
 
       ))}
@@ -103,8 +120,8 @@ function App() {
           <p>{`${currentGuide[section]?.title} complete.`}</p>
           <p>Select Next to continue to next section or clear to remove this notice.</p>
           <div className="buttons">
-          <Button onClick={() => setShowModal(false)}>Clear</Button>
-          <Button onClick={goToNext} buttonType="primary">Next</Button>
+            <Button onClick={() => setShowModal(false)}>Clear</Button>
+            <Button onClick={goToNext} buttonType="primary">Next</Button>
           </div>
         </Modal>
       )}
