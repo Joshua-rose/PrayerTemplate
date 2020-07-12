@@ -13,11 +13,11 @@ interface Props {
     togglePlaying: (e?: any) => void;
     proceedToNextSection: (e?: any) => void;
 }
-const topBottom = '20vh';
+const topBottom = 'height: 20vh; max-height:70px;';
 const StyledSection = Styled.section`
     header {
         background-image: linear-gradient(113.42deg, #A3C4BC 25.18%, rgba(163, 196, 188, 0.21) 78.54%);
-        height: 20vh;
+        ${topBottom}
         
     }
     article {
@@ -33,10 +33,11 @@ const StyledSection = Styled.section`
     }
     &.open {
         footer {
-            height: ${topBottom}
+            ${topBottom}
         }
         article {
-            height: calc(100vh - calc(${topBottom} * 2))
+            height: auto;
+            height: calc(100vh - calc(2* min(20vh, 70px)));
 
         }
     }
