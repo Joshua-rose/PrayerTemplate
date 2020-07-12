@@ -37,7 +37,7 @@ const StyledSection = Styled.section`
         }
         article {
             height: auto;
-            height: calc(100vh - calc(2* min(20vh, 70px)));
+            height: calc(90vh - calc(2* min(20vh, 70px)));
             padding: 5vh;
 
         }
