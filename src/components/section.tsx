@@ -49,27 +49,26 @@ const StyledSection = Styled.section`
     }
 `;
 
-const StyledTimer = Styled(Button)`
+const StyledTimer = Styled.div`
     position: relative;
-    &::after {
-        content: "\u25B6"
-        height: 10px;
-        width: 10px;
-    }
     &.playing:after {
-        content: "\u25B6"
+      content: "\u23F8";
     }
     &.paused:after {
-        content: "\u23F8"
+      content: "\u25B6";
     }
 `;
 
+const isSpaceBar = (event: React.KeyboardEvent) => {
+  if (event.key === ' ' || event.keyCode === 32) return true;
+  return false;
+};
 const Section = ({
   title, time, content, isTimerRunning, isFocused, togglePlaying, isComplete, proceedToNextSection,
 }: Props) => (
   <StyledSection className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`}>
-    <header>
-      <StyledTimer buttonType={`timer ${isTimerRunning ? 'playing' : 'paused'}`} onClick={togglePlaying}>
+    <header onClick={togglePlaying} onKeyDown={(e: React.KeyboardEvent) => { if (isSpaceBar(e)) togglePlaying(); }} role="button" tabIndex={0}>
+      <StyledTimer className={`timer ${isTimerRunning ? 'playing' : 'paused'}`}>
         {time}
       </StyledTimer>
       {title}
