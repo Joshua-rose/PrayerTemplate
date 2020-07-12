@@ -110,6 +110,7 @@ function App() {
             togglePlaying={toggleTimer}
             proceedToNextSection={goToNext}
             time={isFocused ? time || length : length}
+            isTimerRunning={intervalID !== 0}
           />
 
         </>
