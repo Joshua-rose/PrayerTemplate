@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Section from './components/section';
 import Modal from './components/modal';
 import PrayerGuild, { plan } from './guides/prayerguide1';
-import logo from './logo.svg';
 import './App.css';
 import Button from './components/button';
 
