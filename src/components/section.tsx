@@ -42,18 +42,6 @@ const StyledSection = Styled.section`
 
         }
     }
-    .timer {
-         position: relative;
-        &:after {
-            content: "\u25B6"
-            height: 10px;
-            width: 10px;
-        }
-        &.playing:after {
-            content: "\u23F8"
-        
-        }
-    }
     .complete{
       header {
         background-image: linear-gradient(113.42deg, #c0ff33 25.18%, rgba(163, 196, 188, 0.21) 78.54%);
