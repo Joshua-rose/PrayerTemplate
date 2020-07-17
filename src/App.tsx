@@ -1,11 +1,13 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable max-len */
 import React, { useState, useEffect } from 'react';
+import Styled from 'styled-components';
 import Section from './components/section';
 import Modal from './components/modal';
 import PrayerGuild, { plan } from './guides/prayerguide1';
 import './App.css';
 import Button from './components/button';
+import menuImg from './assets/Icon material-more-vert.svg';
 
 type sections = plan & {
   isFocused?: boolean,
@@ -18,6 +20,15 @@ function ensureTwoDigit(val: number|string) {
   if (valAsString.length < 2) return `0${val}`;
   return valAsString;
 }
+
+const StyledMenu = Styled.button`
+border:none;
+background: none;
+position: fixed;
+top: 18px;
+right:10px;
+
+`;
 function App() {
   const [time, setTime] = useState('');
   const guideStarter: sections[] = [];
@@ -84,6 +95,10 @@ function App() {
     } else createInterval(time || currentGuide[getCurrentIndex()].time);
     // if timer is going stop timer
   };
+  const resetTimer = () => {
+    clearLocalInterval();
+    setTime('');
+  };
   useEffect(() => {
     const getContents = async () => {
       const contents = await Promise.all(PrayerGuild.map((pg) => pg.content()));
@@ -106,6 +121,7 @@ function App() {
 
   return (
     <div id="App">
+      <StyledMenu type="button" onClick={() => {}}><img src={menuImg} alt="Menu" /></StyledMenu>
       {currentGuide.map(({
         title, display, time: length, isFocused, isComplete,
       }) => (
@@ -117,6 +133,7 @@ function App() {
             togglePlaying={toggleTimer}
             proceedToNextSection={goToNext}
             time={isFocused ? time || length : length}
+            resetTimer={resetTimer}
             isTimerRunning={intervalID !== 0}
           />
 
