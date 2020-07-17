@@ -1,7 +1,10 @@
 import React from 'react';
 import Styled from 'styled-components';
 import Button from './button';
-import background from '../assets/topography.svg';
+import resetImg from '../assets/Icon awesome-redo-alt.svg';
+import pauseImg from '../assets/Icon material-pause.svg';
+import nextImg from '../assets/Icon material-skip-next.svg';
+import playImg from '../assets/Icon material-play-arrow.svg';
 
 interface Props {
     title: string;
@@ -12,24 +15,45 @@ interface Props {
     isComplete?: boolean;
     togglePlaying: (e?: any) => void;
     proceedToNextSection: (e?: any) => void;
+    resetTimer: (e?: any) => void;
 }
 const topBottom = 'height: 20vh; max-height:70px;';
 const StyledSection = Styled.section`
+    button.image {
+      background:none;
+      border:none;
+    }
+
     header {
-        background-image: linear-gradient(113.42deg, #A3C4BC 25.18%, rgba(163, 196, 188, 0.21) 78.54%);
+        background-color:#20BF55;
+        color: white;
+        padding: 0 20px;
+        display: grid;
+    align-items: center;
+    grid-template-columns: 55px 1fr 10px;
+
         ${topBottom}
         
     }
     article {
-        background-image: url(${background});
-        background-size: cover;
+        background: linear-gradient(220.3deg, rgba(255,247,232,1) 0%, rgba(241,235,225,1) 15.05%, rgba(246,246,246,1) 51.89%, rgba(255,247,232,1) 100%);
         height: 0;
         overflow: auto;
     }
     footer {
-         background-color: #8C705F;
+         background-color: #7A93AC;
         height: 0;
         overflow:hidden;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        button {
+          height: 35%;
+          img {
+            height:100%;
+          }
+        }
     }
     &.open {
         footer {
@@ -49,36 +73,27 @@ const StyledSection = Styled.section`
     }
 `;
 
-const StyledTimer = Styled.div`
-    position: relative;
-    &.playing:after {
-      content: "\u23F8";
-    }
-    &.paused:after {
-      content: "\u25B6";
-    }
-`;
-
 const isSpaceBar = (event: React.KeyboardEvent) => {
   if (event.key === ' ' || event.keyCode === 32) return true;
   return false;
 };
 const Section = ({
-  title, time, content, isTimerRunning, isFocused, togglePlaying, isComplete, proceedToNextSection,
+  title, time, content, isTimerRunning, isFocused, togglePlaying, isComplete, proceedToNextSection, resetTimer,
 }: Props) => (
   <StyledSection className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`}>
     <header onClick={togglePlaying} onKeyDown={(e: React.KeyboardEvent) => { if (isSpaceBar(e)) togglePlaying(); }} role="button" tabIndex={0}>
-      <StyledTimer className={`timer ${isTimerRunning ? 'playing' : 'paused'}`}>
-        {time}
-      </StyledTimer>
-      {title}
+      <div>{time}</div>
+      <div>{title}</div>
     </header>
     <article>{content}</article>
     <footer>
-      <Button buttonType="primary" onClick={togglePlaying}>
-        {isTimerRunning ? 'Pause' : 'Start'}
+      <Button buttonType="image" onClick={togglePlaying}>
+        <img src={isTimerRunning ? pauseImg : playImg} alt={isTimerRunning ? 'Pause' : 'Start'} />
+
       </Button>
-      <Button buttonType="secondary" onClick={proceedToNextSection}>Next</Button>
+      <Button buttonType="image" onClick={proceedToNextSection}><img src={nextImg} alt="Next" /></Button>
+      <Button buttonType="image" onClick={resetTimer}><img src={resetImg} alt="Reset" /></Button>
+
     </footer>
   </StyledSection>
 );
