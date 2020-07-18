@@ -2,7 +2,7 @@ import React from 'react';
 import ReactMarkdown from 'react-markdown/with-html';
 
 const Praise = require('./Praise-Give_God_Glory.md');
-
+const Confess = require('./Confess-Temple_cleansing_time.md');
 
 export type plan = {
     time: string,
@@ -26,7 +26,7 @@ const prayerPlan: plan[] = [
     time: '05:00',
     title: 'Confession - Temple Cleansing Time',
     content: async () => {
-      const content = await getMarkdown(Praise);
+      const content = await getMarkdown(Confess);
       return (<ReactMarkdown source={content} escapeHtml={false} />);
     },
   },
