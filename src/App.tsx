@@ -33,33 +33,14 @@ function App() {
   const [time, setTime] = useState('');
   const guideStarter: sections[] = [];
   const [currentGuide, setCurrentGuide] = useState(guideStarter);
-  const [section, setSection] = useState(0);
+  const [section, setSection] = useState(-1);
   const [showModal, setShowModal] = useState(false);
   const [intervalID, setIntervalID] = useState(0);
   const endOfTimer = () => {
     setShowModal(true);
     // create modal content with buttons for going to next or clearing modal
   };
-
-  const goToNext = () => {
-    setTime('');
-    setSection((s) => {
-      const i = s + 1;
-      const guide = currentGuide;
-      guide[s].isFocused = false;
-      if (guide.length > i) {
-        guide[i].isFocused = true;
-      }
-      setShowModal(false);
-      setCurrentGuide(guide);
-      return s;
-    });
-  };
-  const getCurrentIndex = () => currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
   const clearLocalInterval = () => {
-    console.log(': ------------------------------------------------------------');
-    console.log('clearLocalInterval -> clearLocalInterval called');
-    console.log(': ------------------------------------------------------------');
     clearInterval(intervalID);
     setIntervalID(0);
   };
@@ -87,23 +68,32 @@ function App() {
   };
   const toggleTimer = () => {
     // if timer is stopped start timer
-    console.log(': ---------------------------------');
-    console.log('toggleTimer -> interval', intervalID);
-    console.log(': ---------------------------------');
     if (intervalID !== 0) {
       clearLocalInterval();
-    } else createInterval(time || currentGuide[getCurrentIndex()].time);
+    } else createInterval(time || currentGuide[section].time);
     // if timer is going stop timer
   };
   const resetTimer = () => {
     clearLocalInterval();
     setTime('');
   };
+  const headerClickHandler = (index: number) => {
+    if (index === section) toggleTimer();
+    else setSection(index);
+  };
+  const goToNext = () => {
+    const next = section + 1;
+    if (currentGuide.length > section + 1) {
+      setTime('');
+      setSection(next);
+    }
+    setShowModal(false);
+  };
+  // const getCurrentIndex = () => currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
   useEffect(() => {
     const getContents = async () => {
       const contents = await Promise.all(PrayerGuild.map((pg) => pg.content()));
       const newPrayerGuild: sections[] = PrayerGuild.map((pg, i) => ({ ...pg, display: contents[i] }));
-      newPrayerGuild[section].isFocused = true;
       setCurrentGuide(newPrayerGuild);
     };
     getContents();
@@ -118,28 +108,33 @@ function App() {
   //     createInterval(currentGuide[currentIndex].time);
   //   }
   // }, [currentGuide]);
-
   return (
     <div id="App">
       <StyledMenu type="button" onClick={() => {}}><img src={menuImg} alt="Menu" /></StyledMenu>
       {currentGuide.map(({
-        title, display, time: length, isFocused, isComplete,
-      }) => (
-        <>
-          <Section
-            title={title}
-            content={display}
-            isFocused={isFocused}
-            togglePlaying={toggleTimer}
-            proceedToNextSection={goToNext}
-            time={isFocused ? time || length : length}
-            resetTimer={resetTimer}
-            isTimerRunning={intervalID !== 0}
-          />
+        title, display, time: length, isComplete,
+      }, index) => {
+        const isFocused = index === section;
+        return (
+          <>
+            <Section
+              key={title}
+              index={index}
+              title={title}
+              content={display}
+              isFocused={isFocused}
+              togglePlaying={toggleTimer}
+              headerClickHandler={headerClickHandler}
+              proceedToNextSection={goToNext}
+              time={isFocused ? time || length : length}
+              resetTimer={resetTimer}
+              isTimerRunning={intervalID !== 0}
+            />
 
-        </>
+          </>
 
-      ))}
+        );
+      })}
       {showModal && (
         <Modal>
           <p>{`${currentGuide[section]?.title} complete.`}</p>

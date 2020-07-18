@@ -13,6 +13,8 @@ interface Props {
     isFocused?: boolean;
     isTimerRunning?: boolean;
     isComplete?: boolean;
+    index: number;
+    headerClickHandler: (e?: any) => void;
     togglePlaying: (e?: any) => void;
     proceedToNextSection: (e?: any) => void;
     resetTimer: (e?: any) => void;
@@ -78,10 +80,22 @@ const isSpaceBar = (event: React.KeyboardEvent) => {
   return false;
 };
 const Section = ({
-  title, time, content, isTimerRunning, isFocused, togglePlaying, isComplete, proceedToNextSection, resetTimer,
+  title, time, content,
+  isTimerRunning, isFocused, togglePlaying,
+  isComplete, proceedToNextSection, resetTimer,
+  headerClickHandler, index,
 }: Props) => (
   <StyledSection className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`}>
-    <header onClick={togglePlaying} onKeyDown={(e: React.KeyboardEvent) => { if (isSpaceBar(e)) togglePlaying(); }} role="button" tabIndex={0}>
+    <header
+      onClick={() => headerClickHandler(index)}
+      onKeyDown={(e: React.KeyboardEvent) => {
+        if (isSpaceBar(e)) {
+          headerClickHandler();
+        }
+      }}
+      role="button"
+      tabIndex={0}
+    >
       <div>{time}</div>
       <div>{title}</div>
     </header>
