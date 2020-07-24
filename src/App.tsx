@@ -63,7 +63,7 @@ function App() {
         }
         return min >= 0 || sec >= 0 ? `${ensureTwoDigit(min)}:${ensureTwoDigit(sec)}` : '';
       });
-    }, 100);
+    }, 1000);
     setIntervalID(localInterval);
   };
   const toggleTimer = () => {
