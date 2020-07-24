@@ -36,7 +36,7 @@ function App() {
   const [section, setSection] = useState(-1);
   const [showModal, setShowModal] = useState(false);
   const [intervalID, setIntervalID] = useState(0);
-  const [offSetTop, setOffSetTop] = useState(0)
+  const [sectionRef, setSectionRef] = useState();
   const endOfTimer = () => {
     setShowModal(true);
     // create modal content with buttons for going to next or clearing modal
@@ -81,19 +81,8 @@ function App() {
   const headerClickHandler = (index: number, ref:any) => {
     if (index === section) toggleTimer();
     else {
-      setSection(() => {
-        if (ref && ref.offsetTop !== undefined) {
-          console.log(': ------------------------------');
-          console.log('headerClickHandler -> ref', ref.offsetTop);
-          console.log(': ------------------------------');
-          window.scrollTo({
-            top: ref.offsetTop,
-            behavior: 'smooth',
-          });
-        }
-
-        return index;
-      });
+      setSection(index);
+      setSectionRef(ref);
     }
   };
   const goToNext = () => {
@@ -116,6 +105,14 @@ function App() {
       clearInterval(intervalID);
     };
   }, []);
+  useEffect(() => {
+    if (sectionRef) {
+      window.scrollTo({
+        top: sectionRef.offsetTop,
+        behavior: 'smooth',
+      });
+    }
+  }, [sectionRef]);
   // useEffect(() => {
   //   if (currentGuide.length > 0) {
   //     clearInterval(interval);
