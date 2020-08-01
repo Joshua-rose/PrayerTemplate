@@ -33,6 +33,8 @@ const StyledSection = Styled.section`
         display: grid;
     align-items: center;
     grid-template-columns: 55px 1fr 10px;
+    position:sticky;
+    top:0;
 
         ${topBottom}
         
@@ -58,13 +60,17 @@ const StyledSection = Styled.section`
         }
     }
     &.open {
+        height: 100%;
+
         footer {
             ${topBottom}
+            position: sticky;
+            bottom:0;
         }
         article {
-            height: auto;
-            height: calc(90vh - calc(2* min(20vh, 70px)));
-            padding: 5vh;
+            // height: auto;
+            height: calc(100vh - min(40vh, 140px));
+            padding: calc(10px + min(20vh, 70px)) 5vh;
 
         }
     }
@@ -97,9 +103,8 @@ class Section extends React.Component<Props> {
         headerClickHandler, index,
       } = this.props;
       return (
-        <StyledSection className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`}>
+        <StyledSection className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`} ref={this.ref}>
           <header
-            ref={this.ref}
             onClick={() => headerClickHandler(index, this.ref?.current)}
             onKeyDown={(e: React.KeyboardEvent) => {
               if (isSpaceBar(e)) {
