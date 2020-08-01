@@ -7,6 +7,8 @@ import nextImg from '../assets/Icon material-skip-next.svg';
 import playImg from '../assets/Icon material-play-arrow.svg';
 
 interface Props {
+  // todo: handle the header click in section instead of app
+  // todo: use ref.current.parent.offsetTop to movc the window to the correct space
     title: string;
     time: any; // todo figure out what type time should have
     content: string | JSX.Element;
