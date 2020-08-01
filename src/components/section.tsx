@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { RefObject } from 'react';
 import Styled from 'styled-components';
 import Button from './button';
 import resetImg from '../assets/Icon awesome-redo-alt.svg';
@@ -18,6 +18,8 @@ interface Props {
     togglePlaying: (e?: any) => void;
     proceedToNextSection: (e?: any) => void;
     resetTimer: (e?: any) => void;
+  returnRef: (ref: RefObject<HTMLElement>) => void;
+
 }
 const topBottom = 'height: 20vh; max-height:70px;';
 const StyledSection = Styled.section`
@@ -95,6 +97,12 @@ class Section extends React.Component<Props> {
       // this.props = props;
     }
 
+    componentDidMount() {
+      const { returnRef } = this.props;
+      console.log(this.ref);
+      returnRef(this.ref);
+    }
+
     render() {
       const {
         title, time, content,
@@ -103,8 +111,9 @@ class Section extends React.Component<Props> {
         headerClickHandler, index,
       } = this.props;
       return (
-        <StyledSection className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`} ref={this.ref}>
+        <StyledSection className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`}>
           <header
+            ref={this.ref}
             onClick={() => headerClickHandler(index, this.ref?.current)}
             onKeyDown={(e: React.KeyboardEvent) => {
               if (isSpaceBar(e)) {

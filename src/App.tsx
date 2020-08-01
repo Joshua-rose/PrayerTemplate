@@ -1,6 +1,6 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable max-len */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, RefObject } from 'react';
 import Styled from 'styled-components';
 import Section from './components/section';
 import Modal from './components/modal';
@@ -36,7 +36,8 @@ function App() {
   const [section, setSection] = useState(-1);
   const [showModal, setShowModal] = useState(false);
   const [intervalID, setIntervalID] = useState(0);
-  const [sectionRef, setSectionRef] = useState();
+  const sectionRefStarter: RefObject<HTMLElement>[] = [];
+  const [sectionRef, setSectionRef] = useState(sectionRefStarter);
   const endOfTimer = () => {
     setShowModal(true);
     // create modal content with buttons for going to next or clearing modal
@@ -82,10 +83,10 @@ function App() {
     if (index === section) toggleTimer();
     else {
       setSection(index);
-      setSectionRef(ref);
+      // setSectionRef(ref);
     }
   };
-  const goToNext = () => {
+  const goToNext = (ref:any) => {
     const next = section + 1;
     if (currentGuide.length > section + 1) {
       setTime('');
@@ -106,13 +107,29 @@ function App() {
     };
   }, []);
   useEffect(() => {
-    if (sectionRef) {
-      window.scrollTo({
-        top: sectionRef.offsetTop,
-        behavior: 'smooth',
-      });
+    console.log(': -----------------------------');
+    console.log('App -> sectionRef', sectionRef);
+    console.log(': -----------------------------');
+    console.log(': -----------------------');
+    console.log('App -> section', section);
+    console.log(': -----------------------');
+    // let secRef: React.ElementRef<'div'>
+    if (sectionRef.length && sectionRef.length > section) {
+      const secRef = sectionRef[section];
+      console.log(': ---------------------');
+      console.log('App -> secRef', secRef);
+      console.log(': ---------------------');
+      console.log(': -------------------------------------------------------------------');
+      console.log('App -> secRef.current?.parentElement', secRef.current?.parentElement);
+      console.log(': -------------------------------------------------------------------');
+      if (secRef) {
+        window.scrollTo({
+          top: secRef.current?.parentElement?.offsetHeight,
+          behavior: 'smooth',
+        });
+      }
     }
-  }, [sectionRef]);
+  }, [section]);
   // useEffect(() => {
   //   if (currentGuide.length > 0) {
   //     clearInterval(interval);
@@ -141,6 +158,7 @@ function App() {
               time={isFocused ? time || length : length}
               resetTimer={resetTimer}
               isTimerRunning={intervalID !== 0}
+              returnRef={(ref) => setSectionRef((refs) => [...refs, ref])}
             />
 
           </>
