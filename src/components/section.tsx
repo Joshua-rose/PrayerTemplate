@@ -14,7 +14,7 @@ interface Props {
     isTimerRunning?: boolean;
     isComplete?: boolean;
     index: number;
-    headerClickHandler: (e?: any) => void;
+    headerClickHandler: (index:number, ref:any) => void;
     togglePlaying: (e?: any) => void;
     proceedToNextSection: (e?: any) => void;
     resetTimer: (e?: any) => void;
@@ -79,37 +79,51 @@ const isSpaceBar = (event: React.KeyboardEvent) => {
   if (event.key === ' ' || event.keyCode === 32) return true;
   return false;
 };
-const Section = ({
-  title, time, content,
-  isTimerRunning, isFocused, togglePlaying,
-  isComplete, proceedToNextSection, resetTimer,
-  headerClickHandler, index,
-}: Props) => (
-  <StyledSection className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`}>
-    <header
-      onClick={() => headerClickHandler(index)}
-      onKeyDown={(e: React.KeyboardEvent) => {
-        if (isSpaceBar(e)) {
-          headerClickHandler();
-        }
-      }}
-      role="button"
-      tabIndex={0}
-    >
-      <div>{time}</div>
-      <div>{title}</div>
-    </header>
-    <article>{content}</article>
-    <footer>
-      <Button buttonType="image" onClick={togglePlaying}>
-        <img src={isTimerRunning ? pauseImg : playImg} alt={isTimerRunning ? 'Pause' : 'Start'} />
+// const sectionRef = React.createRef();
+class Section extends React.Component<Props> {
+    ref: any= null;
 
-      </Button>
-      <Button buttonType="image" onClick={proceedToNextSection}><img src={nextImg} alt="Next" /></Button>
-      <Button buttonType="image" onClick={resetTimer}><img src={resetImg} alt="Reset" /></Button>
+    constructor(props: Props) {
+      super(props);
+      this.ref = React.createRef();
+      // this.props = props;
+    }
 
-    </footer>
-  </StyledSection>
-);
+    render() {
+      const {
+        title, time, content,
+        isTimerRunning, isFocused, togglePlaying,
+        isComplete, proceedToNextSection, resetTimer,
+        headerClickHandler, index,
+      } = this.props;
+      return (
+        <StyledSection className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`}>
+          <header
+            ref={this.ref}
+            onClick={() => headerClickHandler(index, this.ref?.current)}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (isSpaceBar(e)) {
+                headerClickHandler(index, this.ref?.current);
+              }
+            }}
+            role="button"
+            tabIndex={0}
+          >
+            <div>{time}</div>
+            <div>{title}</div>
+          </header>
+          <article>{content}</article>
+          <footer>
+            <Button buttonType="image" onClick={togglePlaying}>
+              <img src={isTimerRunning ? pauseImg : playImg} alt={isTimerRunning ? 'Pause' : 'Start'} />
 
+            </Button>
+            <Button buttonType="image" onClick={proceedToNextSection}><img src={nextImg} alt="Next" /></Button>
+            <Button buttonType="image" onClick={resetTimer}><img src={resetImg} alt="Reset" /></Button>
+
+          </footer>
+        </StyledSection>
+      );
+    }
+}
 export default Section;
