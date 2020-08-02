@@ -1,4 +1,3 @@
-<!DOCTYPE svg PUBLIC “-//W3C//DTD SVG 1.1//EN” “http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd”> 
-<svg xmlns="http://www.w3.org/2000/svg"  version="1.1" width="12" height="12" viewBox="0 0 12 12">
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
   <path id="Icon_awesome-redo-alt" data-name="Icon awesome-redo-alt" d="M6.551.562A5.98,5.98,0,0,0,2.418,2.224L1.554,1.36a.581.581,0,0,0-.991.411V5.014a.581.581,0,0,0,.581.581H4.387A.581.581,0,0,0,4.8,4.6l-1.01-1.01a4.064,4.064,0,1,1,.1,6.028.29.29,0,0,0-.4.013l-.96.96a.291.291,0,0,0,.012.422A6,6,0,1,0,6.551.562Z" transform="translate(-0.563 -0.563)" fill="#fff"/>
 </svg>
