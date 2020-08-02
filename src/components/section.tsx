@@ -54,9 +54,7 @@ const StyledSection = Styled.section`
         padding: 0 20px;
         input[type="image"] {
           height: 35%;
-          img {
-            height:100%;
-          }
+          border-radius: none;
         }
     }
     &.open {
