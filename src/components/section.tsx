@@ -23,7 +23,7 @@ interface Props {
 }
 const topBottom = 'height: 20vh; max-height:70px;';
 const StyledSection = Styled.section`
-    button.image {
+    input[type="image"] {
       background:none;
       border:none;
     }
@@ -52,7 +52,7 @@ const StyledSection = Styled.section`
         justify-content: space-between;
         align-items: center;
         padding: 0 20px;
-        button {
+        input[type="image"] {
           height: 35%;
           img {
             height:100%;
