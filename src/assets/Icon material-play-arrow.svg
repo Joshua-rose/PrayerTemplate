@@ -1,3 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="16.5" height="21" viewBox="0 0 16.5 21">
+<?xml version="1.0" standalone="no"?>
+
+<svg xmlns="http://www.w3.org/2000/svg" width="16.5" height="21" viewBox="0 0 16.5 21" xmlns="http://www.w3.org/2000/svg" version="1.1">
   <path id="Icon_material-play-arrow" data-name="Icon material-play-arrow" d="M12,7.5v21L28.5,18Z" transform="translate(-12 -7.5)" fill="#fff"/>
 </svg>
