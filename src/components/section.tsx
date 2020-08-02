@@ -23,7 +23,7 @@ interface Props {
 }
 const topBottom = 'height: 20vh; max-height:70px;';
 const StyledSection = Styled.section`
-    button.image {
+    input[type="image"] {
       background:none;
       border:none;
     }
@@ -52,11 +52,9 @@ const StyledSection = Styled.section`
         justify-content: space-between;
         align-items: center;
         padding: 0 20px;
-        button {
+        input[type="image"] {
           height: 35%;
-          img {
-            height:100%;
-          }
+          border-radius: none;
         }
     }
     &.open {
@@ -121,13 +119,9 @@ function Section(props: Props) {
       </header>
       <article>{content}</article>
       <footer>
-        <Button buttonType="image" onClick={togglePlaying}>
-          <img src={isTimerRunning ? pauseImg : playImg} alt={isTimerRunning ? 'Pause' : 'Start'} />
-
-        </Button>
-        <Button buttonType="image" onClick={proceedToNextSection}><img src={nextImg} alt="Next" /></Button>
-        <Button buttonType="image" onClick={resetTimer}><img src={resetImg} alt="Reset" /></Button>
-
+        <input type="image" onClick={togglePlaying} src={isTimerRunning ? pauseImg : playImg} alt={isTimerRunning ? 'Pause' : 'Start'} />
+        <input type="image" onClick={proceedToNextSection} src={nextImg} alt="Next" />
+        <input type="image" onClick={resetTimer} src={resetImg} alt="Reset" />
       </footer>
     </StyledSection>
   );
