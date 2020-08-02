@@ -79,12 +79,13 @@ function App() {
   };
   const headerClickHandler = (index: number) => {
     if (index === section) toggleTimer();
-    else setSection(index);
+    else {
+      setSection(index);
+    }
   };
   const goToNext = () => {
     const next = section + 1;
     if (currentGuide.length > section + 1) {
-      setTime('');
       setSection(next);
     }
     setShowModal(false);
@@ -101,6 +102,9 @@ function App() {
       clearInterval(intervalID);
     };
   }, []);
+  useEffect(() => {
+    setTime('');
+  }, [section])
   // useEffect(() => {
   //   if (currentGuide.length > 0) {
   //     clearInterval(interval);
