@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Styled from 'styled-components';
 import Button from './button';
 import resetImg from '../assets/Icon awesome-redo-alt.svg';
@@ -9,17 +9,17 @@ import playImg from '../assets/Icon material-play-arrow.svg';
 interface Props {
   // todo: handle the header click in section instead of app
   // todo: use ref.current.parent.offsetTop to movc the window to the correct space
-    title: string;
-    time: any; // todo figure out what type time should have
-    content: string | JSX.Element;
-    isFocused?: boolean;
-    isTimerRunning?: boolean;
-    isComplete?: boolean;
-    index: number;
-    headerClickHandler: (e?: any) => void;
-    togglePlaying: (e?: any) => void;
-    proceedToNextSection: (e?: any) => void;
-    resetTimer: (e?: any) => void;
+  title: string;
+  time: any; // todo figure out what type time should have
+  content: string | JSX.Element;
+  isFocused?: boolean;
+  isTimerRunning?: boolean;
+  isComplete?: boolean;
+  index: number;
+  headerClickHandler: (e?: any) => void;
+  togglePlaying: (e?: any) => void;
+  proceedToNextSection: (e?: any) => void;
+  resetTimer: (e?: any) => void;
 }
 const topBottom = 'height: 20vh; max-height:70px;';
 const StyledSection = Styled.section`
@@ -27,7 +27,6 @@ const StyledSection = Styled.section`
       background:none;
       border:none;
     }
-
     header {
         background-color:#20BF55;
         color: white;
@@ -35,7 +34,8 @@ const StyledSection = Styled.section`
         display: grid;
     align-items: center;
     grid-template-columns: 55px 1fr 10px;
-
+    position:sticky;
+    top:0;
         ${topBottom}
         
     }
@@ -60,14 +60,16 @@ const StyledSection = Styled.section`
         }
     }
     &.open {
+        height: 100%;
         footer {
             ${topBottom}
+            position: sticky;
+            bottom:0;
         }
         article {
-            height: auto;
-            height: calc(90vh - calc(2* min(20vh, 70px)));
-            padding: 5vh;
-
+            // height: auto;
+            height: calc(100vh - min(40vh, 140px));
+            padding: calc(10px + min(20vh, 70px)) 5vh;
         }
     }
     .complete{
@@ -81,37 +83,53 @@ const isSpaceBar = (event: React.KeyboardEvent) => {
   if (event.key === ' ' || event.keyCode === 32) return true;
   return false;
 };
-const Section = ({
-  title, time, content,
-  isTimerRunning, isFocused, togglePlaying,
-  isComplete, proceedToNextSection, resetTimer,
-  headerClickHandler, index,
-}: Props) => (
-  <StyledSection className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`}>
-    <header
-      onClick={() => headerClickHandler(index)}
-      onKeyDown={(e: React.KeyboardEvent) => {
-        if (isSpaceBar(e)) {
-          headerClickHandler();
-        }
-      }}
-      role="button"
-      tabIndex={0}
-    >
-      <div>{time}</div>
-      <div>{title}</div>
-    </header>
-    <article>{content}</article>
-    <footer>
-      <Button buttonType="image" onClick={togglePlaying}>
-        <img src={isTimerRunning ? pauseImg : playImg} alt={isTimerRunning ? 'Pause' : 'Start'} />
+function Section(props: Props) {
+  const {
+    title, time, content,
+    isTimerRunning, isFocused, togglePlaying,
+    isComplete, proceedToNextSection, resetTimer,
+    headerClickHandler, index,
+  } = props;
 
-      </Button>
-      <Button buttonType="image" onClick={proceedToNextSection}><img src={nextImg} alt="Next" /></Button>
-      <Button buttonType="image" onClick={resetTimer}><img src={resetImg} alt="Reset" /></Button>
+  const ref = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (isFocused) {
+      console.dir(ref ? ref?.current : 'not found');
+      const top = ref ? ref?.current?.offsetTop : -23;
+      if (top !== -23) {
+        window.scrollTo({
+          top,
+          behavior: 'smooth',
+        });
+      }
+    }
+  }, [isFocused]);
+  return (
+    <StyledSection ref={ref} className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`}>
+      <header
+        onClick={() => headerClickHandler(index)}
+        onKeyDown={(e: React.KeyboardEvent) => {
+          if (isSpaceBar(e)) {
+            headerClickHandler();
+          }
+        }}
+        role="button"
+        tabIndex={0}
+      >
+        <div>{time}</div>
+        <div>{title}</div>
+      </header>
+      <article>{content}</article>
+      <footer>
+        <Button buttonType="image" onClick={togglePlaying}>
+          <img src={isTimerRunning ? pauseImg : playImg} alt={isTimerRunning ? 'Pause' : 'Start'} />
 
-    </footer>
-  </StyledSection>
-);
+        </Button>
+        <Button buttonType="image" onClick={proceedToNextSection}><img src={nextImg} alt="Next" /></Button>
+        <Button buttonType="image" onClick={resetTimer}><img src={resetImg} alt="Reset" /></Button>
 
+      </footer>
+    </StyledSection>
+  );
+}
 export default Section;
