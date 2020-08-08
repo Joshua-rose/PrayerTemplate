@@ -33,7 +33,7 @@ const StyledSection = Styled.section`
         padding: 0 20px;
         display: grid;
     align-items: center;
-    grid-template-columns: 55px 1fr 10px;
+    grid-template-columns: 70px 1fr 10px;
     position:sticky;
     top:0;
         ${topBottom}
@@ -75,6 +75,12 @@ const StyledSection = Styled.section`
         background-image: linear-gradient(113.42deg, #c0ff33 25.18%, rgba(163, 196, 188, 0.21) 78.54%);
       }
     }
+    &.running {
+      header {
+        background-color: #1F1300;
+        color: #fff;
+      }
+    }
 `;
 
 const isSpaceBar = (event: React.KeyboardEvent) => {
@@ -103,7 +109,7 @@ function Section(props: Props) {
     }
   }, [isFocused]);
   return (
-    <StyledSection ref={ref} className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}`}>
+    <StyledSection ref={ref} className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}${isTimerRunning ? ' running': ''}`}>
       <header
         onClick={() => headerClickHandler(index)}
         onKeyDown={(e: React.KeyboardEvent) => {
@@ -114,7 +120,7 @@ function Section(props: Props) {
         role="button"
         tabIndex={0}
       >
-        <div>{time}</div>
+        <div>{`${time} ${isTimerRunning ? '⏸' : '▶'}`}</div>
         <div>{title}</div>
       </header>
       <article>{content}</article>
