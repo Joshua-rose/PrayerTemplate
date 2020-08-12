@@ -33,7 +33,8 @@ const StyledSection = Styled.section`
         padding: 0 20px;
         display: grid;
     align-items: center;
-    grid-template-columns: 70px 1fr 10px;
+    grid-template-columns: fit-content(100px) 1fr;
+    grid-gap: calc(min(30px, 5vw));
     position:sticky;
     top:0;
         ${topBottom}
@@ -108,8 +109,13 @@ function Section(props: Props) {
       }
     }
   }, [isFocused]);
+  const classNames = [
+    ...isFocused ? ['open', ...isTimerRunning ? ['running'] : []] : [],
+    ...isComplete ? ['complete'] : [],
+  ];
+
   return (
-    <StyledSection ref={ref} className={`${isFocused ? 'open' : ''}${isComplete ? ' complete' : ''}${isTimerRunning ? ' running': ''}`}>
+    <StyledSection ref={ref} className={classNames.join(' ')}>
       <header
         onClick={() => headerClickHandler(index)}
         onKeyDown={(e: React.KeyboardEvent) => {
@@ -120,7 +126,7 @@ function Section(props: Props) {
         role="button"
         tabIndex={0}
       >
-        <div>{`${time} ${isTimerRunning ? '⏸' : '▶'}`}</div>
+        <div>{`${time} ${isFocused && isTimerRunning ? '⏸' : '▶'}`}</div>
         <div>{title}</div>
       </header>
       <article>{content}</article>
