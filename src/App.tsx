@@ -8,6 +8,7 @@ import PrayerGuild, { plan } from './guides/prayerguide1';
 import './App.css';
 import Button from './components/button';
 import menuImg from './assets/Icon material-more-vert.svg';
+import {  getBrowserVisibilityProp, getIsDocumentHidden} from './utils/pageVisibleHook'
 
 type sections = plan & {
   isFocused?: boolean,
@@ -36,20 +37,51 @@ function App() {
   const [section, setSection] = useState(-1);
   const [showModal, setShowModal] = useState(false);
   const [intervalID, setIntervalID] = useState(0);
+  // const [isVisible, setIsVisible] = React.useState(getIsDocumentHidden())
+  const onVisibilityChange = () => {
+    if (!getIsDocumentHidden()) {
+      const storedTimeString = window.localStorage.getItem('estimatedEndTime');
+      if (storedTimeString){
+        const currentTime = new Date();
+        const storedTime = new Date(storedTimeString);
+        if (storedTime < currentTime) endOfTimer();
+        else {
+          const timeRemaining = Math.round((storedTime.getTime() - currentTime.getTime())*1000);
+          const minRemaining = Math.floor(timeRemaining/60);
+          const secRemaining =  timeRemaining%60;
+          resetTimer();
+          createInterval(`${minRemaining}:${secRemaining}`)
+        }
+      }
+    }
+  }
+
   const endOfTimer = () => {
     setShowModal(true);
+    clearLocalInterval();
     // create modal content with buttons for going to next or clearing modal
   };
   const clearLocalInterval = () => {
     clearInterval(intervalID);
     setIntervalID(0);
+    window.localStorage.removeItem('estimatedEndTime');
   };
+  const estimateEndingTime = (sectionTime: string) => {
+    const [min,sec] = getMinSecFromTime(sectionTime);
+    const t = new Date();
+    t.setSeconds(t.getSeconds() + sec);
+    t.setMinutes(t.getMinutes() + min);
+    return t;
+  }
+  const getMinSecFromTime = (time: string) => time.split(':').map((n) => parseInt(n, 10));
   const createInterval = (sectionTime: string) => {
+
+    window.localStorage.setItem('estimatedEndTime', estimateEndingTime(sectionTime).toUTCString());
     clearLocalInterval();
     const localInterval = setInterval(() => {
-      setTime((t) => {
+      setTime((t: string) => {
         const tt = t !== '' ? t : sectionTime;
-        let [min, sec] = tt.split(':').map((n) => parseInt(n, 10));
+        let [min, sec] = getMinSecFromTime(tt);
 
         if (--sec <= 0) {
           if (min > 0) {
@@ -98,7 +130,14 @@ function App() {
       setCurrentGuide(newPrayerGuild);
     };
     getContents();
+    const visibilityChange = getBrowserVisibilityProp()
+    if (visibilityChange){
+      window.addEventListener(visibilityChange, onVisibilityChange, false)
+    }
     return () => {
+      if (visibilityChange) {
+        window.removeEventListener(visibilityChange, onVisibilityChange)
+      }
       clearInterval(intervalID);
     };
   }, []);
