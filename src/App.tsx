@@ -54,6 +54,9 @@ function App() {
         }
       }
     }
+    else {
+      resetTimer();
+    }
   }
 
   const endOfTimer = () => {
