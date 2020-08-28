@@ -33,6 +33,7 @@ export default function App() {
     const endOfTimer = () => {
         setShowModal(true);
         clearLocalInterval();
+        setIsActive(false);
         // create modal content with buttons for going to next or clearing modal
     };
     const addTimeToDate = ({min, sec}:MinSec) => {
@@ -73,12 +74,14 @@ export default function App() {
         }
     }
     const resetTimer = () => {
-        
+        setIsActive(false);
+
     }
     
     
     const clearLocalInterval = () => {
         clearInterval(intervalID);
+        setIsActive(false);
         setIntervalID(0);
         window.localStorage.removeItem('estimatedEndTime');
     };
@@ -116,6 +119,8 @@ export default function App() {
     }, [isActive])
     useEffect(() => {
         if(section > -1) {
+            clearLocalInterval();
+            setDisplayTime('')
             const [min,sec] = currentGuide[section].time.split(':').map(t=>parseInt(t));
             setPauseTimeRemaining({min,sec});
         }
