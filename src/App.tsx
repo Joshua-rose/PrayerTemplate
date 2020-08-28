@@ -46,12 +46,6 @@ export default function App() {
         const now = new Date();
         if (et < now) return {min:0,sec:0};
         const timeRemaining = Math.round((et.getTime() - now.getTime()) / 1000);
-        console.log(': --------------------------------');
-        console.log(`if -> ${et.toString()}`, et.getTime());
-        console.log(': --------------------------------');
-        console.log(': ----------------------------------');
-        console.log('if -> timeRemaining', timeRemaining);
-        console.log(': ----------------------------------');
         const min = Math.floor(timeRemaining / 60);
         const sec = timeRemaining % 60;
         return {min, sec}
