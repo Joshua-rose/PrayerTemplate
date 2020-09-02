@@ -1,84 +1,97 @@
-/* eslint-disable no-plusplus */
-/* eslint-disable max-len */
+/* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/require-default-props */
 import React, { useState, useEffect } from 'react';
-import Styled from 'styled-components';
+import PrayerGuild, { plan } from './guides/prayerguide1';
+
 import Section from './components/section';
 import Modal from './components/modal';
-import PrayerGuild, { plan } from './guides/prayerguide1';
-import './App.css';
 import Button from './components/button';
-import menuImg from './assets/Icon material-more-vert.svg';
+
+import { getBrowserVisibilityProp, getIsDocumentHidden } from './utils/pageVisibleHook';
 
 type sections = plan & {
-  isFocused?: boolean,
-  isComplete?: boolean,
-  isTimerRunning?: boolean,
+    isFocused?: boolean,
+    isComplete?: boolean,
+    isTimerRunning?: boolean,
 
 }
-function ensureTwoDigit(val: number|string) {
-  const valAsString = `${val}`;
-  if (valAsString.length < 2) return `0${val}`;
-  return valAsString;
+type MinSec = {
+    min?: number,
+    sec?: number
 }
-
-const StyledMenu = Styled.button`
-border:none;
-background: none;
-position: fixed;
-top: 18px;
-right:10px;
-
-`;
-function App() {
-  const [time, setTime] = useState('');
+export default function App() {
   const guideStarter: sections[] = [];
-  const [currentGuide, setCurrentGuide] = useState(guideStarter);
+  const [endTime, setEndTime] = useState(new Date());
+  const [isActive, setIsActive] = useState(false);
   const [section, setSection] = useState(-1);
+  const [currentGuide, setCurrentGuide] = useState(guideStarter);
   const [showModal, setShowModal] = useState(false);
   const [intervalID, setIntervalID] = useState(0);
-  const endOfTimer = () => {
-    setShowModal(true);
-    // create modal content with buttons for going to next or clearing modal
-  };
+  const [pauseTimeRemaining, setPauseTimeRemaining] = useState({ min: 0, sec: 0 });
+  const [displayTime, setDisplayTime] = useState('');
+  const [isVisible, setIsVisible] = useState(true);
+
   const clearLocalInterval = () => {
     clearInterval(intervalID);
+    setIsActive(false);
     setIntervalID(0);
+    window.localStorage.removeItem('estimatedEndTime');
   };
-  const createInterval = (sectionTime: string) => {
+  const addTimeToDate = ({ min, sec }:MinSec) => {
+    const newDate = new Date();
+    newDate.setMinutes(newDate.getMinutes() + (min || 0));
+    newDate.setSeconds(newDate.getSeconds() + (sec || 0));
+    return newDate;
+  };
+  const getTimeRemaining = (e?:Date) => {
+    const et = e || endTime;
+    const now = new Date();
+    if (et < now) return { min: 0, sec: 0 };
+    const timeRemaining = Math.round((et.getTime() - now.getTime()) / 1000);
+    const min = Math.floor(timeRemaining / 60);
+    const sec = timeRemaining % 60;
+    return { min, sec };
+  };
+  const endOfTimer = () => {
+    setShowModal(true);
     clearLocalInterval();
-    const localInterval = setInterval(() => {
-      setTime((t) => {
-        const tt = t !== '' ? t : sectionTime;
-        let [min, sec] = tt.split(':').map((n) => parseInt(n, 10));
-
-        if (--sec <= 0) {
-          if (min > 0) {
-            sec = 59; --min;
-          } else {
-            clearInterval(localInterval);
-            setIntervalID(0);
-            // setTime('');
-            setShowModal(true);
-          }
-        }
-        return min >= 0 || sec >= 0 ? `${ensureTwoDigit(min)}:${ensureTwoDigit(sec)}` : '';
-      });
-    }, 1000);
-    setIntervalID(localInterval);
+    setIsActive(false);
+    // create modal content with buttons for going to next or clearing modal
   };
-  const toggleTimer = () => {
-    // if timer is stopped start timer
-    if (intervalID !== 0) {
-      clearLocalInterval();
-    } else createInterval(time || currentGuide[section].time);
-    // if timer is going stop timer
+  const startTimer = (ms: MinSec) => {
+    const estimatedEndTime = addTimeToDate(ms);
+    setEndTime(estimatedEndTime);
+    setIsActive(true);
+    const interval = setInterval(() => {
+      const { min, sec } = getTimeRemaining(estimatedEndTime);
+      if (min <= 0 && sec <= 0) endOfTimer();
+      else {
+        const dTime = [min, sec].map((t) => (t < 10 ? `0${t}` : t)).join(':');
+        setDisplayTime(dTime);
+      }
+    }, 500);
+    setIntervalID(interval);
+  };
+  const togglePause = () => {
+    if (isActive) {
+      setIsActive(false);
+      setPauseTimeRemaining(getTimeRemaining());
+    } else {
+      setIsActive(true);
+      startTimer(pauseTimeRemaining);
+    }
   };
   const resetTimer = () => {
-    clearLocalInterval();
-    setTime('');
+    setIsActive(false);
+  };
+
+  const getContents = async () => {
+    const contents = await Promise.all(PrayerGuild.map((pg) => pg.content()));
+    const newPrayerGuild: sections[] = PrayerGuild.map((pg, i) => ({ ...pg, display: contents[i] }));
+    setCurrentGuide(newPrayerGuild);
   };
   const headerClickHandler = (index: number) => {
-    if (index === section) toggleTimer();
+    if (index === section) togglePause();
     else {
       setSection(index);
     }
@@ -87,37 +100,54 @@ function App() {
     const next = section + 1;
     if (currentGuide.length > section + 1) {
       setSection(next);
+    } else {
+      clearLocalInterval();
     }
     setShowModal(false);
   };
-  // const getCurrentIndex = () => currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
+  const visibililityHasChanged = () => {
+    if (getIsDocumentHidden()) {
+      setIsVisible(false);
+      if (isActive) {
+        clearLocalInterval();
+      }
+    } else if (isActive) {
+      setIsVisible(true);
+      startTimer(getTimeRemaining(endTime));
+    }
+  };
   useEffect(() => {
-    const getContents = async () => {
-      const contents = await Promise.all(PrayerGuild.map((pg) => pg.content()));
-      const newPrayerGuild: sections[] = PrayerGuild.map((pg, i) => ({ ...pg, display: contents[i] }));
-      setCurrentGuide(newPrayerGuild);
-    };
     getContents();
-    return () => {
-      clearInterval(intervalID);
-    };
+    const visibilityChange = getBrowserVisibilityProp();
+    if (visibilityChange) {
+      window.addEventListener(visibilityChange, visibililityHasChanged, false);
+    }
+
+    // return () => {
+    //   // cleanup
+    //   if (visibilityChange) window.removeEventListener(visibilityChange, visibililityHasChanged, false);
+    //   clearLocalInterval();
+    // };
   }, []);
   useEffect(() => {
-    setTime('');
-  }, [section])
-  // useEffect(() => {
-  //   if (currentGuide.length > 0) {
-  //     clearInterval(interval);
-  //     const currentIndex = currentGuide.map((cg) => (cg.isFocused ? 'f' : '')).indexOf('f');
-  //     createInterval(currentGuide[currentIndex].time);
-  //   }
-  // }, [currentGuide]);
+    if (!isActive) {
+      clearLocalInterval();
+    }
+  }, [isActive]);
+  useEffect(() => {
+    if (section > -1) {
+      clearLocalInterval();
+      setDisplayTime('');
+      const [min, sec] = currentGuide[section].time.split(':').map((t: string) => parseInt(t, 10));
+      setPauseTimeRemaining({ min, sec });
+    }
+  }, [section]);
   return (
     <div id="App">
-      <StyledMenu type="button" onClick={() => {}}><img src={menuImg} alt="Menu" /></StyledMenu>
+      {/* <StyledMenu type="button" onClick={() => { }}><img src={menuImg} alt="Menu" /></StyledMenu> */}
       {currentGuide.map(({
         title, display, time: length, isComplete,
-      }, index) => {
+      }:sections, index: number) => {
         const isFocused = index === section;
         return (
           <>
@@ -127,10 +157,10 @@ function App() {
               title={title}
               content={display}
               isFocused={isFocused}
-              togglePlaying={toggleTimer}
+              togglePlaying={togglePause}
               headerClickHandler={headerClickHandler}
               proceedToNextSection={goToNext}
-              time={isFocused ? time || length : length}
+              time={isFocused ? displayTime || length : length}
               resetTimer={resetTimer}
               isTimerRunning={intervalID !== 0}
             />
@@ -152,5 +182,3 @@ function App() {
     </div>
   );
 }
-
-export default App;
