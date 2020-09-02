@@ -143,33 +143,33 @@ export default function App() {
     }
   }, [section]);
   return (
-      <div id="App">
-        {/* <StyledMenu type="button" onClick={() => { }}><img src={menuImg} alt="Menu" /></StyledMenu> */}
-        {currentGuide.map(({
-          title, display, time: length, isComplete,
-        }:sections, index: number) => {
-          const isFocused = index === section;
-          return (
-            <>
-              <Section
-                key={title}
-                index={index}
-                title={title}
-                content={display}
-                isFocused={isFocused}
-                togglePlaying={togglePause}
-                headerClickHandler={headerClickHandler}
-                proceedToNextSection={goToNext}
-                time={isFocused ? displayTime || length : length}
-                resetTimer={resetTimer}
-                isTimerRunning={intervalID !== 0}
-              />
+    <div id="App">
+      {/* <StyledMenu type="button" onClick={() => { }}><img src={menuImg} alt="Menu" /></StyledMenu> */}
+      {currentGuide.map(({
+        title, display, time: length, isComplete,
+      }:sections, index: number) => {
+        const isFocused = index === section;
+        return (
+          <>
+            <Section
+              key={title}
+              index={index}
+              title={title}
+              content={display}
+              isFocused={isFocused}
+              togglePlaying={togglePause}
+              headerClickHandler={headerClickHandler}
+              proceedToNextSection={goToNext}
+              time={isFocused ? displayTime || length : length}
+              resetTimer={resetTimer}
+              isTimerRunning={intervalID !== 0}
+            />
 
-            </>
+          </>
 
-          );
-        })}
-        {showModal && (
+        );
+      })}
+      {showModal && (
         <Modal>
           <p>{`${currentGuide[section]?.title} complete.`}</p>
           <p>Select Next to continue to next section or clear to remove this notice.</p>
@@ -178,7 +178,7 @@ export default function App() {
             <Button onClick={goToNext} buttonType="primary">Next</Button>
           </div>
         </Modal>
-        )}
-      </div>
+      )}
+    </div>
   );
 }
