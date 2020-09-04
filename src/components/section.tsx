@@ -1,14 +1,13 @@
-import React, { useEffect, useState, useRef } from 'react';
+/* eslint-disable react/require-default-props */
+import React, { useEffect, useRef } from 'react';
 import Styled from 'styled-components';
-import Button from './button';
+// import Button from './button';
 import resetImg from '../assets/Icon awesome-redo-alt.svg';
 import pauseImg from '../assets/Icon material-pause.svg';
 import nextImg from '../assets/Icon material-skip-next.svg';
 import playImg from '../assets/Icon material-play-arrow.svg';
 
 interface Props {
-  // todo: handle the header click in section instead of app
-  // todo: use ref.current.parent.offsetTop to movc the window to the correct space
   title: string;
   time: any; // todo figure out what type time should have
   content: string | JSX.Element;
@@ -99,7 +98,6 @@ function Section(props: Props) {
   const ref = useRef<HTMLElement>(null);
   useEffect(() => {
     if (isFocused) {
-      console.dir(ref ? ref?.current : 'not found');
       const top = ref ? ref?.current?.offsetTop : -23;
       if (top !== -23) {
         window.scrollTo({

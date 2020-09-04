@@ -1,5 +1,5 @@
-/* eslint-disable react/no-unused-prop-types */
-/* eslint-disable react/require-default-props */
+/* eslint-disable react/no-unused-prop-types, react/require-default-props */
+
 import React, { useState, useEffect } from 'react';
 import PrayerGuild, { plan } from './guides/prayerguide1';
 
