@@ -9,6 +9,10 @@ import Button from './components/button';
 
 import { getBrowserVisibilityProp, getIsDocumentHidden } from './utils/pageVisibleHook';
 
+const chimeSource = require('./assets/352661__foolboymedia__complete-chime.mp3');
+
+const chime = new Audio(chimeSource);
+
 type sections = plan & {
     isFocused?: boolean,
     isComplete?: boolean,
@@ -53,6 +57,7 @@ export default function App() {
     return { min, sec };
   };
   const endOfTimer = () => {
+    chime.play();
     setShowModal(true);
     clearLocalInterval();
     setIsActive(false);
