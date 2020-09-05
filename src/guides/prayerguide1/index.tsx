@@ -4,6 +4,12 @@ import ReactMarkdown from 'react-markdown/with-html';
 const Praise = require('./Praise-Give_God_Glory.md');
 const Confess = require('./Confess-Temple_cleansing_time.md');
 const Intercession = require('./Intercession-Remember_the_world.md');
+const Petition = require('./Petition-Share_my_needs.md');
+const Thanksgiving = require('./Thanksgiving-Give_specific_thanks.md');
+const Meditation = require('./Meditation-Ponder_Spiritual_Themes.md');
+const Listening = require('./Listening-Let_God_Speak.md');
+const Word = require('./Word-Read_the_word.md');
+
 const CommingSoon = require('./Comming Soon.md');
 
 export type plan = {
@@ -44,7 +50,7 @@ const prayerPlan: plan[] = [
     time: '05:00',
     title: 'Petition - Share my needs',
     content: async () => {
-      const content = await getMarkdown(CommingSoon);
+      const content = await getMarkdown(Petition);
       return (<ReactMarkdown source={content} escapeHtml={false} />);
     },
   },
@@ -52,7 +58,7 @@ const prayerPlan: plan[] = [
     time: '05:00',
     title: 'Thanksgiving - Give Specific thanks',
     content: async () => {
-      const content = await getMarkdown(CommingSoon);
+      const content = await getMarkdown(Thanksgiving);
       return (<ReactMarkdown source={content} escapeHtml={false} />);
     },
   },
@@ -60,7 +66,7 @@ const prayerPlan: plan[] = [
     time: '05:00',
     title: 'Meditation - Ponder Spiritual things',
     content: async () => {
-      const content = await getMarkdown(CommingSoon);
+      const content = await getMarkdown(Meditation);
       return (<ReactMarkdown source={content} escapeHtml={false} />);
     },
   },
@@ -68,7 +74,7 @@ const prayerPlan: plan[] = [
     time: '05:00',
     title: 'Listening - Let God speak',
     content: async () => {
-      const content = await getMarkdown(CommingSoon);
+      const content = await getMarkdown(Listening);
       return (<ReactMarkdown source={content} escapeHtml={false} />);
     },
   },
@@ -76,7 +82,7 @@ const prayerPlan: plan[] = [
     time: '05:00',
     title: 'Word - Read the word',
     content: async () => {
-      const content = await getMarkdown(CommingSoon);
+      const content = await getMarkdown(Word);
       return (<ReactMarkdown source={content} escapeHtml={false} />);
     },
   },
