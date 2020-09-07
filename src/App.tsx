@@ -1,5 +1,5 @@
-/* eslint-disable react/no-unused-prop-types */
-/* eslint-disable react/require-default-props */
+/* eslint-disable react/no-unused-prop-types, react/require-default-props */
+
 import React, { useState, useEffect } from 'react';
 import PrayerGuild, { plan } from './guides/prayerguide1';
 
@@ -8,6 +8,12 @@ import Modal from './components/modal';
 import Button from './components/button';
 
 import { getBrowserVisibilityProp, getIsDocumentHidden } from './utils/pageVisibleHook';
+
+import './App.css';
+
+const chimeSource = require('./assets/352661__foolboymedia__complete-chime.mp3');
+
+const chime = new Audio();
 
 type sections = plan & {
     isFocused?: boolean,
@@ -53,12 +59,16 @@ export default function App() {
     return { min, sec };
   };
   const endOfTimer = () => {
+    chime.play();
     setShowModal(true);
     clearLocalInterval();
     setIsActive(false);
     // create modal content with buttons for going to next or clearing modal
   };
   const startTimer = (ms: MinSec) => {
+    chime.src = '';
+    chime.play();
+    chime.src = chimeSource;
     const estimatedEndTime = addTimeToDate(ms);
     setEndTime(estimatedEndTime);
     setIsActive(true);
@@ -143,33 +153,34 @@ export default function App() {
     }
   }, [section]);
   return (
-    <div id="App">
-      {/* <StyledMenu type="button" onClick={() => { }}><img src={menuImg} alt="Menu" /></StyledMenu> */}
-      {currentGuide.map(({
-        title, display, time: length, isComplete,
-      }:sections, index: number) => {
-        const isFocused = index === section;
-        return (
-          <>
-            <Section
-              key={title}
-              index={index}
-              title={title}
-              content={display}
-              isFocused={isFocused}
-              togglePlaying={togglePause}
-              headerClickHandler={headerClickHandler}
-              proceedToNextSection={goToNext}
-              time={isFocused ? displayTime || length : length}
-              resetTimer={resetTimer}
-              isTimerRunning={intervalID !== 0}
-            />
+    <>
+      <div id="App">
+        {/* <StyledMenu type="button" onClick={() => { }}><img src={menuImg} alt="Menu" /></StyledMenu> */}
+        {currentGuide.map(({
+          title, display, time: length, isComplete,
+        }:sections, index: number) => {
+          const isFocused = index === section;
+          return (
+            <>
+              <Section
+                key={title}
+                index={index}
+                title={title}
+                content={display}
+                isFocused={isFocused}
+                togglePlaying={togglePause}
+                headerClickHandler={headerClickHandler}
+                proceedToNextSection={goToNext}
+                time={isFocused ? displayTime || length : length}
+                resetTimer={resetTimer}
+                isTimerRunning={intervalID !== 0}
+              />
 
-          </>
+            </>
 
-        );
-      })}
-      {showModal && (
+          );
+        })}
+        {showModal && (
         <Modal>
           <p>{`${currentGuide[section]?.title} complete.`}</p>
           <p>Select Next to continue to next section or clear to remove this notice.</p>
@@ -178,7 +189,15 @@ export default function App() {
             <Button onClick={goToNext} buttonType="primary">Next</Button>
           </div>
         </Modal>
-      )}
-    </div>
+        )}
+      </div>
+      <footer>
+        <p>Icons from Material and Awesome</p>
+        <p>
+          &quot;Notification Up&quot; from FoolBoyMedia on
+          <a href="https://freesound.org/people/FoolBoyMedia/sounds/234564/"> FreeSound</a>
+        </p>
+      </footer>
+    </>
   );
 }
