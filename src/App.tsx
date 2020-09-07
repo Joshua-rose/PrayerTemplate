@@ -13,7 +13,7 @@ import './App.css';
 
 const chimeSource = require('./assets/352661__foolboymedia__complete-chime.mp3');
 
-const chime = new Audio(chimeSource);
+const chime = new Audio();
 
 type sections = plan & {
     isFocused?: boolean,
@@ -66,6 +66,9 @@ export default function App() {
     // create modal content with buttons for going to next or clearing modal
   };
   const startTimer = (ms: MinSec) => {
+    chime.src = '';
+    chime.play();
+    chime.src = chimeSource;
     const estimatedEndTime = addTimeToDate(ms);
     setEndTime(estimatedEndTime);
     setIsActive(true);
