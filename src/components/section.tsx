@@ -45,6 +45,14 @@ const StyledSection = Styled.section`
         height: 0;
         overflow: auto;
     }
+    details {
+      padding: 0.5rem;
+      margin-left:2rem;
+    }
+    summary {
+      margin-bottom:1rem;
+      margin-left:-2rem;
+    }
     footer {
          background-color: #7A93AC;
         height: 0;
