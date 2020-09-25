@@ -1,6 +1,7 @@
 /* eslint-disable react/no-unused-prop-types, react/require-default-props */
 
 import React, { useState, useEffect } from 'react';
+import Header from './components/header';
 import PrayerGuild, { plan } from './guides/prayerguide1';
 
 import Section from './components/section';
@@ -155,6 +156,7 @@ export default function App() {
   return (
     <>
       <div id="App">
+        <Header />
         {/* <StyledMenu type="button" onClick={() => { }}><img src={menuImg} alt="Menu" /></StyledMenu> */}
         {currentGuide.map(({
           title, display, time: length, isComplete,
@@ -191,13 +193,6 @@ export default function App() {
         </Modal>
         )}
       </div>
-      <footer>
-        <p>Icons from Material and Awesome</p>
-        <p>
-          &quot;Notification Up&quot; from FoolBoyMedia on
-          <a href="https://freesound.org/people/FoolBoyMedia/sounds/234564/"> FreeSound</a>
-        </p>
-      </footer>
     </>
   );
 }

@@ -2,7 +2,7 @@ import React from 'react';
 import Styled from 'styled-components';
 
 const StyledModalBackground = Styled.div`
-    position: absolute;
+    position: fixed;
     z-index: 9999;
     top: 0;
     left: 0;
