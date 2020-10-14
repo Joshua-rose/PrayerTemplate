@@ -3,8 +3,9 @@ body {
 }
 #App {
   max-width: 1000px;
-  background-color: whitesmoke;
+  background: radial-gradient(rgba(52,89,149,1) 0%, rgba(43,92,144,1) 33.92%, rgba(0,109,119,1) 100%);
   margin: 0 auto;
+  position: relative;
 }
 footer {
   font-size: 0.5rem;
