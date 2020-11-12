@@ -1,4 +1,4 @@
-# Word  Read the Word
+# Word - Read the Word
 
 <details><summary>Acts 6:10 NIV</summary>But they could not stand up against the wisdom the Spirit gave him as he spoke. </details>
 <details><summary>Psalm 19:7-10 NKJV</summary>The law of the LORD is perfect, converting the soul; The testimony of the LORD is sure, making wise the simple; [8] The statutes of the LORD are right, rejoicing the heart; The commandment of the LORD is pure, enlightening the eyes; [9] The fear of the LORD is clean, enduring forever; The judgments of the LORD are true and righteous altogether. [10] More to be desired are they than gold, Yea, than much fine gold; Sweeter also than honey and the honeycomb. </details>
