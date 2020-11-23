@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import React, { useEffect, useRef } from 'react';
+import React, { ReactElement, ReactNode, useEffect, useRef } from 'react';
 import Styled from 'styled-components';
 // import Button from './button';
 import resetImg from '../assets/Icon awesome-redo-alt.svg';
@@ -7,10 +7,14 @@ import pauseImg from '../assets/Icon material-pause.svg';
 import nextImg from '../assets/Icon material-skip-next.svg';
 import playImg from '../assets/Icon material-play-arrow.svg';
 
+
+// todo: add timer to section so it can keep state
+// only use the header handler if not active
+
 interface Props {
   title: string;
   time: any; // todo figure out what type time should have
-  content: string | JSX.Element;
+  content?: string | JSX.Element;
   isFocused?: boolean;
   isTimerRunning?: boolean;
   isComplete?: boolean;
@@ -19,6 +23,7 @@ interface Props {
   togglePlaying: (e?: any) => void;
   proceedToNextSection: (e?: any) => void;
   resetTimer: (e?: any) => void;
+  children?: ReactNode;
 }
 const topBottom = 'height: 20vh; max-height:70px;';
 const StyledSection = Styled.section`
@@ -95,12 +100,12 @@ const isSpaceBar = (event: React.KeyboardEvent) => {
   if (event.key === ' ' || event.keyCode === 32) return true;
   return false;
 };
-function Section(props: Props) {
+function Section(props: Props): ReactElement {
   const {
     title, time, content,
     isTimerRunning, isFocused, togglePlaying,
     isComplete, proceedToNextSection, resetTimer,
-    headerClickHandler, index,
+    headerClickHandler, index, children,
   } = props;
 
   const ref = useRef<HTMLElement>(null);
@@ -119,7 +124,6 @@ function Section(props: Props) {
     ...isFocused ? ['open', ...isTimerRunning ? ['running'] : []] : [],
     ...isComplete ? ['complete'] : [],
   ];
-
   return (
     <StyledSection ref={ref} className={classNames.join(' ')}>
       <header
@@ -135,7 +139,7 @@ function Section(props: Props) {
         <div>{`${time} ${isFocused && isTimerRunning ? '⏸' : '▶'}`}</div>
         <div>{title}</div>
       </header>
-      <article>{content}</article>
+      <article>{content || children}</article>
       <footer>
         <input type="image" onClick={togglePlaying} src={isTimerRunning ? pauseImg : playImg} alt={isTimerRunning ? 'Pause' : 'Start'} />
         <input type="image" onClick={proceedToNextSection} src={nextImg} alt="Next" />
