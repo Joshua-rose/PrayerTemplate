@@ -42,12 +42,13 @@ export default function Guide({ template }: Props): ReactElement {
           ...sec,
           isTimerRunning: false,
           isFocused: false,
+          timeRemaining: timer.togglePause(),
         };
       } if (i === activeSection + 1) {
         setActiveSection(i);
         return {
           ...sec,
-          // isTimerRunning: false,
+          isTimerRunning: false,
           isFocused: true,
         };
       } return sec;
