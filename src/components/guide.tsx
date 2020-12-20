@@ -14,30 +14,37 @@ const chime = new Audio();
 
 export default function Guide({ template }: Props): ReactElement {
   const [sections, setSections] = useState([] as any[]);
-  // const [sectionStatus, setSectionStatus] = useState({} as any);
   const [showModal, setShowModal] = useState(false);
-  const getActiveSection = () => sections.findIndex((sec) => sec.isFocused)
-  // let index: number = -1;
-  // for (let ind = 0; ind < sections.length; ind++) {
-  //   if (sections[ind].isFocused) {
-  //     index = ind;
-  //     break;
-  //   }
-  // }
-  // // const [key] = Object.keys(sectionStatus).filter((s) => sections[s].isFocused);
-  // return index;
-  // ;
+  const [timer, setTimer] = useState(null as any);
+  const [activeSection, setActiveSection] = useState(-1);
+  // let activeSection: number;
+  const getCurrentActiveSection = () => {
+    const localActiveSection = activeSection;
+    return localActiveSection;
+  };
+  // const setActiveSection = (newValue: number) => { activeSection = newValue; };
+  useEffect(() => {
+    const currentSection = sections.findIndex((sec) => sec.isFocused);
+    console.log('updating active section', `active ${activeSection} current ${currentSection}`);
 
+    if (currentSection !== -1 && activeSection !== currentSection) {
+      setActiveSection(currentSection);
+    }
+  }, [sections]);
+  useEffect(() => {
+    console.log('new active section', activeSection);
+  }, [activeSection]);
   const goToNext = () => {
-    const currentKey = getActiveSection();
-    setSections(sections.map((sec, i) => {
-      if (i === currentKey) {
+    // const currentKey = getActiveSection();
+    setSections((prevSections) => prevSections.map((sec, i) => {
+      if (i === activeSection) {
         return {
           ...sec,
           isTimerRunning: false,
           isFocused: false,
         };
-      } if (i === currentKey + 1) {
+      } if (i === activeSection + 1) {
+        setActiveSection(i);
         return {
           ...sec,
           // isTimerRunning: false,
@@ -49,9 +56,9 @@ export default function Guide({ template }: Props): ReactElement {
   const endOfTimer = () => {
     chime.play();
     setShowModal(true);
-    const index = getActiveSection();
-    setSections(sections.map((s, i) => {
-      if (i === index) {
+    // const index = getActiveSection();
+    setSections((prevSections) => prevSections.map((s, i) => {
+      if (i === activeSection) {
         return {
           ...s,
           isTimerRunning: false,
@@ -64,9 +71,13 @@ export default function Guide({ template }: Props): ReactElement {
   };
 
   const intervalCallback = (timeRemaining:MinSec) => {
-    const index = getActiveSection();
-    setSections(sections.map((s, i) => {
-      if (i === index) {
+    console.log('🚀 --------------------------------------------------------------------------------');
+    console.log('🚀 ~ file: guide.tsx ~ line 59 ~ intervalCallback ~ timeRemaining', timeRemaining);
+    console.log('🚀 --------------------------------------------------------------------------------');
+    // const localActiveSection = getCurrentActiveSection();
+    console.log('activeSection', getCurrentActiveSection());
+    setSections((prevSections) => prevSections.map((s, i) => {
+      if (s.isFocused) {
         return {
           ...s,
           timeRemaining,
@@ -79,55 +90,62 @@ export default function Guide({ template }: Props): ReactElement {
     // holdStatus[key].timeRemaining = timeRemaining;
     // setSectionStatus(holdStatus);
   };
-  const timer = new Timer({
-    endOfTimeCallback: endOfTimer,
-    intervalCallback,
-  });
+  // const timer = new Timer({
+  //   endOfTimeCallback: endOfTimer,
+  //   intervalCallback,
+  // });
   const togglePause = () => {
-    const index = getActiveSection();
-    if (sections[index].isTimerRunning) {
-      setSections(sections.map((sec, i) => {
-        if (i === index) {
+    // const index = getActiveSection();
+    if (sections[activeSection].isTimerRunning) {
+      setSections((prevSections) => prevSections.map((sec, i) => {
+        if (i === activeSection) {
           const timeRemaining = timer.togglePause();
+          console.log('🚀 ----------------------------------------------------------------------------');
+          console.log('🚀 ~ file: guide.tsx ~ line 103 ~ setSections ~ timeRemaining', timeRemaining);
+          console.log('🚀 ----------------------------------------------------------------------------');
           return {
             ...sec,
             isTimerRunning: false,
             timeRemaining,
           };
         }
+        return sec;
       }));
     } else {
-      setSections(sections.map((sec, i) => {
-        if (i === index) {
-          chime.src = '';
-          chime.play();
-          chime.src = chimeSource;
-          timer.startTimer(sec.timeRemaining);
+      let timeRemaining;
+      setSections((prevSections) => prevSections.map((sec, i) => {
+        if (i === activeSection) {
+          ({ timeRemaining } = sec);
+          if (timeRemaining) timer.startTimer(timeRemaining);
           return {
             ...sec,
             isTimerRunning: true,
           };
         }
+        return sec;
       }));
     }
   };
   const headerClickHandler = (key: string) => {
     const keyIndex = sections.findIndex((sec) => sec.key === key);
-    // sections.forEach(callbackfn);
-    const currentKey = getActiveSection();
-    if (keyIndex === currentKey) togglePause();
-    else {
-      setSections(sections.map((s, i) => {
+    // const currentKey = getActiveSection();
+    if (keyIndex === activeSection) {
+      console.log('calling toggle pause');
+
+      togglePause();
+    } else {
+      setSections((prevSections) => prevSections.map((s, i) => {
         if (i === keyIndex) {
+          setActiveSection(i);
+          return {
+            ...s,
+            isFocused: true,
+          };
+        } if (i === activeSection) {
           return {
             ...s,
             isTimerRunning: false,
             isFocused: false,
-          };
-        } if (i === currentKey) {
-          return {
-            ...s,
-            isFocused: true,
           };
         }
         return s;
@@ -149,21 +167,23 @@ name,
 }`,
       { name: template },
     ).then((data) => {
-      setSections(data[0].sections.map((s:any, i:number) => {
+      setSections(data[0].sections.map((s:any, i:number) =>
         // const sec = data[0].sections[s];
-        return {
+        ({
           ...s,
           isTimerRunning: false,
           isComplete: false,
           isFocused: false,
-          timeRemaining: s.time,
+          timeRemaining: { min: parseInt(s.time, 10), sec: 0 },
           key: `${s._id}${i}`,
-        };
-      }));
+        })));
+      setTimer((oldTimer: any) => (oldTimer === null
+        ? new Timer({
+          endOfTimeCallback: endOfTimer,
+          intervalCallback,
+        }) : oldTimer));
     }).catch((data) => {
-      console.log(': ------------------');
-      console.log('Test Error -> data', data);
-      console.log(': ------------------');
+      console.log('Error getting data from CMS');
     });
   }, []);
 
@@ -172,7 +192,7 @@ name,
   }
   return (
     <>
-      {sections.map(({
+      {sections.length > 0 && !!timer && sections.map(({
         title, key, isFocused, timeRemaining, isTimerRunning, richText,
       }, index) => (
         <Section
@@ -183,7 +203,7 @@ name,
           togglePlaying={togglePause}
           headerClickHandler={headerClickHandler}
           proceedToNextSection={goToNext}
-          time={timeRemaining}
+          time={`${timeRemaining.min}:${timeRemaining.sec}`}
           resetTimer={timer.resetTimer}
           isTimerRunning={isTimerRunning}
         >

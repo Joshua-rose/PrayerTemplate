@@ -48,16 +48,25 @@ export class Timer {
   }
 
   startTimer(ms:MinSec) {
+    console.log('🚀 ------------------------------------------------------------------');
+    console.log('🚀 ~ file: timerHelpers.ts ~ line 51 ~ Timer ~ startTimer ~ ms', ms);
+    console.log('🚀 ------------------------------------------------------------------');
     this.length = ms;
     this.timeRemaining = ms;
     const endTime = addTimeToDate(ms);
     this.endTime = endTime;
     this.isRunning = true;
+    clearInterval((this.interval));
     this.interval = setInterval(() => {
       const { min, sec } = getTimeRemaining(endTime);
+      console.log('🚀 -------------------------------------------------------------------------------------------');
+      console.log('🚀 ~ file: timerHelpers.ts ~ line 61 ~ Timer ~ this.interval=setInterval ~ endTime', endTime);
+      console.log('🚀 -------------------------------------------------------------------------------------------');
       this.timeRemaining = { min, sec };
-      if (min <= 0 && sec <= 0) this.endOfTime();
-      else this.intervalCallback({ min, sec });
+      if (min <= 0 && sec <= 0) {
+        clearInterval(this.interval);
+        this.endOfTimeCallback();
+      } else this.intervalCallback({ min, sec });
     }, 500);
   }
 
@@ -73,12 +82,9 @@ export class Timer {
   }
 
   togglePause() {
-    if (this.isRunning) {
-      clearInterval(this.interval);
-      this.isRunning = false;
-      return this.timeRemaining;
-    }
-    return null;
+    clearInterval(this.interval);
+    this.isRunning = false;
+    return this.timeRemaining;
   }
 }
 
