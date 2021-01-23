@@ -4,6 +4,8 @@ import BlockContent from '@sanity/block-content-to-react';
 import SanityClient from '../client';
 import Section from './section';
 import { MinSec, Timer } from '../utils/timerHelpers';
+import Modal from './modal';
+import Button from './button';
 
 interface Props {
     template: string;
@@ -31,6 +33,7 @@ export default function Guide({ template }: Props): ReactElement {
     }
   }, [sections]);
   const goToNext = () => {
+    setShowModal(false)
     // const currentKey = getActiveSection();
     setSections((prevSections) => prevSections.map((sec, i) => {
       if (i === activeSection) {
@@ -240,8 +243,8 @@ name,
                         blocks={body}
                         projectId={SanityClient.config().projectId}
                         dataset={SanityClient.config().dataset}
-                        serializers={{ 
-                          types: { block } 
+                        serializers={{
+                          types: { block },
                         }}
                       />
                     </details>
@@ -253,6 +256,16 @@ name,
           />
         </Section>
       ))}
+      {showModal && (
+        <Modal>
+          <p>{`${sections[activeSection]?.title} complete.`}</p>
+          <p>Select Next to continue to next section or clear to remove this notice.</p>
+          <div className="buttons">
+            <Button onClick={() => setShowModal(false)}>Clear</Button>
+            <Button onClick={goToNext} buttonType="primary">Next</Button>
+          </div>
+        </Modal>
+      )}
     </>
   );
 }
