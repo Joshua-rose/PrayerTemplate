@@ -47,7 +47,7 @@ const StyledSection = Styled.section`
     article {
         background: linear-gradient(220.3deg, rgba(255,247,232,1) 0%, rgba(241,235,225,1) 15.05%, rgba(246,246,246,1) 51.89%, rgba(255,247,232,1) 100%);
         height: 0;
-        overflow: auto;
+        overflow-y: auto;
     }
     details {
       padding: 0.5rem;
@@ -79,7 +79,7 @@ const StyledSection = Styled.section`
         }
         article {
             // height: auto;
-            height: calc(100vh - min(40vh, 140px));
+            height: calc(100vh - min(40vh, 300px));
             padding: calc(10px + min(20vh, 70px)) 5vh;
         }
     }
