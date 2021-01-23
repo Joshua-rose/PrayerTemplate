@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactElement, useState } from 'react';
 import Styled from 'styled-components';
 import MenuIcon from '../assets/Icon material-more-vert.svg';
 import Attribution from './attribution';
@@ -6,6 +6,7 @@ import Attribution from './attribution';
 const VisibleHeader = Styled.div`
     display: grid;
     grid-template-columns: 1fr 1rem;
+    position:relative;
     input {
       position: relative;
       z-index:11;
@@ -13,7 +14,7 @@ const VisibleHeader = Styled.div`
 `;
 const Menu = Styled.div`
     // display: ${(props: {display?: string}) => props.display || 'none'};
-    position: fixed;
+    position: absolute;
     top: 0px;
     left: 0px;
     right: 0px;
@@ -27,7 +28,11 @@ const Menu = Styled.div`
     }
 `;
 
-function Header() {
+interface props {
+  buttons?: {text:string, clickHandler:(arg?: any)=>void}[];
+}
+
+function Header({ buttons }: props) {
   const [menuOpen, setMenuOpen] = useState(false);
   return (
     <div>
@@ -37,11 +42,18 @@ function Header() {
         <input type="image" src={MenuIcon} alt="Open Menu" onClick={() => { setMenuOpen(!menuOpen); }} />
       </VisibleHeader>
       <Menu className={menuOpen ? 'shown' : ''}>
+        {
+          buttons && buttons.map(({ text, clickHandler }) => (
+            <button type="button" onClick={() => { setMenuOpen((isOpen) => !isOpen); clickHandler(); }}>{text}</button>
+          ))
+        }
         <Attribution />
       </Menu>
 
     </div>
   );
 }
-
+Header.defaultProps = {
+  buttons: [],
+};
 export default Header;
