@@ -4,12 +4,14 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/header';
 import PrayerGuild, { plan } from './guides/prayerguide1';
 
+// TODO: finish writing the new TimerHelper->Timer class and migrate the timer to it.
+
 import Section from './components/section';
 import Modal from './components/modal';
 import Button from './components/button';
 
 import { getBrowserVisibilityProp, getIsDocumentHidden } from './utils/pageVisibleHook';
-
+import { addTimeToDate } from './utils/timerHelpers';
 import './App.css';
 
 const chimeSource = require('./assets/352661__foolboymedia__complete-chime.mp3');
@@ -44,12 +46,7 @@ export default function App() {
     setIntervalID(0);
     window.localStorage.removeItem('estimatedEndTime');
   };
-  const addTimeToDate = ({ min, sec }:MinSec) => {
-    const newDate = new Date();
-    newDate.setMinutes(newDate.getMinutes() + (min || 0));
-    newDate.setSeconds(newDate.getSeconds() + (sec || 0));
-    return newDate;
-  };
+  
   const getTimeRemaining = (e?:Date) => {
     const et = e || endTime;
     const now = new Date();
