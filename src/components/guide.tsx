@@ -25,15 +25,11 @@ export default function Guide({ template }: Props): ReactElement {
   // const setActiveSection = (newValue: number) => { activeSection = newValue; };
   useEffect(() => {
     const currentSection = sections.findIndex((sec) => sec.isFocused);
-    console.log('updating active section', `active ${activeSection} current ${currentSection}`);
 
     if (currentSection !== -1 && activeSection !== currentSection) {
       setActiveSection(currentSection);
     }
   }, [sections]);
-  useEffect(() => {
-    console.log('new active section', activeSection);
-  }, [activeSection]);
   const goToNext = () => {
     // const currentKey = getActiveSection();
     setSections((prevSections) => prevSections.map((sec, i) => {
@@ -72,11 +68,7 @@ export default function Guide({ template }: Props): ReactElement {
   };
 
   const intervalCallback = (timeRemaining:MinSec) => {
-    console.log('🚀 --------------------------------------------------------------------------------');
-    console.log('🚀 ~ file: guide.tsx ~ line 59 ~ intervalCallback ~ timeRemaining', timeRemaining);
-    console.log('🚀 --------------------------------------------------------------------------------');
     // const localActiveSection = getCurrentActiveSection();
-    console.log('activeSection', getCurrentActiveSection());
     setSections((prevSections) => prevSections.map((s, i) => {
       if (s.isFocused) {
         return {
@@ -101,9 +93,7 @@ export default function Guide({ template }: Props): ReactElement {
       setSections((prevSections) => prevSections.map((sec, i) => {
         if (i === activeSection) {
           const timeRemaining = timer.togglePause();
-          console.log('🚀 ----------------------------------------------------------------------------');
-          console.log('🚀 ~ file: guide.tsx ~ line 103 ~ setSections ~ timeRemaining', timeRemaining);
-          console.log('🚀 ----------------------------------------------------------------------------');
+
           return {
             ...sec,
             isTimerRunning: false,
@@ -131,8 +121,7 @@ export default function Guide({ template }: Props): ReactElement {
     const keyIndex = sections.findIndex((sec) => sec.key === key);
     // const currentKey = getActiveSection();
     if (keyIndex === activeSection) {
-      console.log('calling toggle pause');
-
+      // hi
       togglePause();
     } else {
       setSections((prevSections) => prevSections.map((s, i) => {
@@ -169,7 +158,9 @@ name,
       { name: template },
     ).then((data) => {
       setSections(data[0].sections.map((s:any, i:number) =>
-        // const sec = data[0].sections[s];
+
+      // const sec = data[0].sections[s];
+
         ({
           ...s,
           isTimerRunning: false,
@@ -191,6 +182,28 @@ name,
   if (!sections) {
     return <div>Loading...</div>;
   }
+  const block = (p:any) => {
+    console.log('🚀 ------------------------------------------------------');
+    console.log('🚀 ~ file: guide.tsx ~ line 186 ~ block ~ props', p);
+    console.log('🚀 ------------------------------------------------------');
+    const { node, children } = p;
+    console.log('🚀 ------------------------------------------------------------');
+    console.log('🚀 ~ file: guide.tsx ~ line 190 ~ block ~ children', children);
+    console.log('🚀 ------------------------------------------------------------');
+    const { style } = node;
+    switch (style) {
+      case 'h2':
+        return (<h2>{Array.isArray(children) ? children.map((child) => (typeof child === 'string' ? child.replace('&nbsp;', ' ') : child)) : children}</h2>);
+      default:
+        return (<p>{Array.isArray(children) ? children.map((child) => (typeof child === 'string' ? child.replace(/\s/g, ' ') : child)) : children}</p>);
+    }
+    if (typeof style === 'undefined' || style === 'normal') {
+      console.log('returning p');
+    }
+
+    const MyTag = style;
+    return (<MyTag>{children}</MyTag>);
+  };
   return (
     <>
       {sections.length > 0 && !!timer && sections.map(({
@@ -212,6 +225,7 @@ name,
             blocks={richText}
             projectId={SanityClient.config().projectId}
             dataset={SanityClient.config().dataset}
+            renderContainerOnSingleChild
             serializers={{
               types: {
                 scriptureReference: (props:any) => {
@@ -226,10 +240,14 @@ name,
                         blocks={body}
                         projectId={SanityClient.config().projectId}
                         dataset={SanityClient.config().dataset}
+                        serializers={{ 
+                          types: { block } 
+                        }}
                       />
                     </details>
                   );
                 },
+                block,
               },
             }}
           />
