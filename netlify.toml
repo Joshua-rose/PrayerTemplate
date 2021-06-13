@@ -1,0 +1,4 @@
+[[headers]]
+for = “/"
+[headers.values]
+Access-Control-Allow-Origin = "https://aiszsefb.api.sanity.io/”
