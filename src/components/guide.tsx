@@ -8,7 +8,7 @@ import Modal from './modal';
 import Button from './button';
 
 interface Props {
-    template: string;
+  template: string;
 }
 const chimeSource = require('../assets/352661__foolboymedia__complete-chime.mp3');
 
@@ -24,12 +24,27 @@ export default function Guide({ template }: Props): ReactElement {
     const localActiveSection = activeSection;
     return localActiveSection;
   };
+
+  const callSetActiveSection = (s: number) => {
+    setActiveSection(prevActiveSection => {
+      if (prevActiveSection === -1) {
+        chime.src = chimeSource;
+        chime.load();
+
+      }
+
+      return s;
+    })
+  }
   // const setActiveSection = (newValue: number) => { activeSection = newValue; };
   useEffect(() => {
     const currentSection = sections.findIndex((sec) => sec.isFocused);
 
     if (currentSection !== -1 && activeSection !== currentSection) {
-      setActiveSection(currentSection);
+      if (activeSection !== -1) {
+        chime.play();
+      }
+      callSetActiveSection(currentSection);
     }
   }, [sections]);
   const goToNext = () => {
@@ -44,7 +59,7 @@ export default function Guide({ template }: Props): ReactElement {
           timeRemaining: timer.togglePause(),
         };
       } if (i === activeSection + 1) {
-        setActiveSection(i);
+        callSetActiveSection(i);
         return {
           ...sec,
           isTimerRunning: false,
@@ -70,7 +85,7 @@ export default function Guide({ template }: Props): ReactElement {
     // create modal content with buttons for going to next or clearing modal
   };
 
-  const intervalCallback = (timeRemaining:MinSec) => {
+  const intervalCallback = (timeRemaining: MinSec) => {
     // const localActiveSection = getCurrentActiveSection();
     setSections((prevSections) => prevSections.map((s, i) => {
       if (s.isFocused) {
@@ -129,7 +144,7 @@ export default function Guide({ template }: Props): ReactElement {
     } else {
       setSections((prevSections) => prevSections.map((s, i) => {
         if (i === keyIndex) {
-          setActiveSection(i);
+          callSetActiveSection(i);
           return {
             ...s,
             isFocused: true,
@@ -160,18 +175,18 @@ name,
 }`,
       { name: template },
     ).then((data) => {
-      setSections(data[0].sections.map((s:any, i:number) =>
+      setSections(data[0].sections.map((s: any, i: number) =>
 
       // const sec = data[0].sections[s];
 
-        ({
-          ...s,
-          isTimerRunning: false,
-          isComplete: false,
-          isFocused: false,
-          timeRemaining: { min: parseInt(s.time, 10), sec: 0 },
-          key: `${s._id}${i}`,
-        })));
+      ({
+        ...s,
+        isTimerRunning: false,
+        isComplete: false,
+        isFocused: false,
+        timeRemaining: { min: parseInt(s.time, 10), sec: 0 },
+        key: `${s._id}${i}`,
+      })));
       setTimer((oldTimer: any) => (oldTimer === null
         ? new Timer({
           endOfTimeCallback: endOfTimer,
@@ -180,12 +195,13 @@ name,
     }).catch((data) => {
       console.log('Error getting data from CMS');
     });
+
   }, []);
 
   if (!sections) {
     return <div>Loading...</div>;
   }
-  const block = (p:any) => {
+  const block = (p: any) => {
     console.log('🚀 ------------------------------------------------------');
     console.log('🚀 ~ file: guide.tsx ~ line 186 ~ block ~ props', p);
     console.log('🚀 ------------------------------------------------------');
@@ -220,7 +236,7 @@ name,
           togglePlaying={togglePause}
           headerClickHandler={headerClickHandler}
           proceedToNextSection={goToNext}
-          time={`${timeRemaining.min}:${timeRemaining.sec}`}
+          time={`${timeRemaining.min}:${timeRemaining.sec < 10 ? `0` : ''}${timeRemaining.sec}`}
           resetTimer={timer.resetTimer}
           isTimerRunning={isTimerRunning}
         >
@@ -231,7 +247,7 @@ name,
             renderContainerOnSingleChild
             serializers={{
               types: {
-                scriptureReference: (props:any) => {
+                scriptureReference: (props: any) => {
                   const { node } = props;
                   const { ref, ref_body: body } = node;
                   return (
