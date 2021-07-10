@@ -22,8 +22,8 @@ export type MinSec = {
   sec?: number
 }
 export interface ITimer {
-  intervalCallback: (timeRemaining:MinSec)=>void;
-  endOfTimeCallback: ()=>void;
+  intervalCallback: (timeRemaining: MinSec) => void;
+  endOfTimeCallback: () => void;
   // ms:MinSec,
 }
 // function Timer ({intervalCallback, endOfTimeCallback, ms}: ITimer) {
@@ -47,10 +47,7 @@ export class Timer {
     this.endOfTimeCallback = endOfTimeCallback;
   }
 
-  startTimer(ms:MinSec) {
-    console.log('🚀 ------------------------------------------------------------------');
-    console.log('🚀 ~ file: timerHelpers.ts ~ line 51 ~ Timer ~ startTimer ~ ms', ms);
-    console.log('🚀 ------------------------------------------------------------------');
+  startTimer(ms: MinSec) {
     this.length = ms;
     this.timeRemaining = ms;
     const endTime = addTimeToDate(ms);
@@ -59,9 +56,6 @@ export class Timer {
     clearInterval((this.interval));
     this.interval = setInterval(() => {
       const { min, sec } = getTimeRemaining(endTime);
-      console.log('🚀 -------------------------------------------------------------------------------------------');
-      console.log('🚀 ~ file: timerHelpers.ts ~ line 61 ~ Timer ~ this.interval=setInterval ~ endTime', endTime);
-      console.log('🚀 -------------------------------------------------------------------------------------------');
       this.timeRemaining = { min, sec };
       if (min <= 0 && sec <= 0) {
         clearInterval(this.interval);
