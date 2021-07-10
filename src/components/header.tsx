@@ -13,7 +13,7 @@ const VisibleHeader = Styled.div`
     }
 `;
 const Menu = Styled.div`
-    // display: ${(props: {display?: string}) => props.display || 'none'};
+    // display: ${(props: { display?: string }) => props.display || 'none'};
     position: absolute;
     top: 0px;
     left: 0px;
@@ -29,7 +29,7 @@ const Menu = Styled.div`
 `;
 
 interface props {
-  buttons?: {text:string, clickHandler:(arg?: any)=>void}[];
+  buttons?: { text: string, clickHandler: (arg?: any) => void }[];
 }
 
 function Header({ buttons }: props) {
@@ -47,6 +47,7 @@ function Header({ buttons }: props) {
             <button type="button" onClick={() => { setMenuOpen((isOpen) => !isOpen); clickHandler(); }}>{text}</button>
           ))
         }
+        <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DWVYgpMbMPJMz?theme=0" width="100%" height="380" frameBorder="0" allowTransparency={true} allow="encrypted-media"></iframe>
         <Attribution />
       </Menu>
 
