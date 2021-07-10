@@ -4,12 +4,14 @@ import React, { useState, useEffect } from 'react';
 import Header from './components/header';
 import PrayerGuild, { plan } from './guides/prayerguide1';
 
+// TODO: finish writing the new TimerHelper->Timer class and migrate the timer to it.
+
 import Section from './components/section';
 import Modal from './components/modal';
 import Button from './components/button';
 
 import { getBrowserVisibilityProp, getIsDocumentHidden } from './utils/pageVisibleHook';
-
+import { addTimeToDate } from './utils/timerHelpers';
 import './App.css';
 
 const chimeSource = require('./assets/352661__foolboymedia__complete-chime.mp3');
@@ -17,14 +19,14 @@ const chimeSource = require('./assets/352661__foolboymedia__complete-chime.mp3')
 const chime = new Audio();
 
 type sections = plan & {
-    isFocused?: boolean,
-    isComplete?: boolean,
-    isTimerRunning?: boolean,
+  isFocused?: boolean,
+  isComplete?: boolean,
+  isTimerRunning?: boolean,
 
 }
 type MinSec = {
-    min?: number,
-    sec?: number
+  min?: number,
+  sec?: number
 }
 export default function App() {
   const guideStarter: sections[] = [];
@@ -44,13 +46,8 @@ export default function App() {
     setIntervalID(0);
     window.localStorage.removeItem('estimatedEndTime');
   };
-  const addTimeToDate = ({ min, sec }:MinSec) => {
-    const newDate = new Date();
-    newDate.setMinutes(newDate.getMinutes() + (min || 0));
-    newDate.setSeconds(newDate.getSeconds() + (sec || 0));
-    return newDate;
-  };
-  const getTimeRemaining = (e?:Date) => {
+
+  const getTimeRemaining = (e?: Date) => {
     const et = e || endTime;
     const now = new Date();
     if (et < now) return { min: 0, sec: 0 };
@@ -73,7 +70,7 @@ export default function App() {
     const estimatedEndTime = addTimeToDate(ms);
     setEndTime(estimatedEndTime);
     setIsActive(true);
-    const interval = setInterval(() => {
+    const interval = window.setInterval(() => {
       const { min, sec } = getTimeRemaining(estimatedEndTime);
       if (min <= 0 && sec <= 0) endOfTimer();
       else {
@@ -160,7 +157,7 @@ export default function App() {
         {/* <StyledMenu type="button" onClick={() => { }}><img src={menuImg} alt="Menu" /></StyledMenu> */}
         {currentGuide.map(({
           title, display, time: length, isComplete,
-        }:sections, index: number) => {
+        }: sections, index: number) => {
           const isFocused = index === section;
           return (
             <>
@@ -183,14 +180,14 @@ export default function App() {
           );
         })}
         {showModal && (
-        <Modal>
-          <p>{`${currentGuide[section]?.title} complete.`}</p>
-          <p>Select Next to continue to next section or clear to remove this notice.</p>
-          <div className="buttons">
-            <Button onClick={() => setShowModal(false)}>Clear</Button>
-            <Button onClick={goToNext} buttonType="primary">Next</Button>
-          </div>
-        </Modal>
+          <Modal>
+            <p>{`${currentGuide[section]?.title} complete.`}</p>
+            <p>Select Next to continue to next section or clear to remove this notice.</p>
+            <div className="buttons">
+              <Button onClick={() => setShowModal(false)}>Clear</Button>
+              <Button onClick={goToNext} buttonType="primary">Next</Button>
+            </div>
+          </Modal>
         )}
       </div>
     </>
